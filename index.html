@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DigiMarket — Buy & Sell Digital Products</title>
+<style>
+:root {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #242836;
+  --text: #e8e8ed; --muted: #8b8fa3; --accent: #6c5ce7;
+  --accent2: #a29bfe; --green: #00d2a0; --red: #ff5e7a;
+  --gold: #f9ca24; --border: #2a2d3a; --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:1.5rem;font-weight:800;color:var(--accent2);letter-spacing:-0.5px}
+.logo span{color:var(--green)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button,.btn{padding:9px 18px;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;transition:.2s}
+.btn-ghost{background:transparent;color:var(--text)}
+.btn-ghost:hover,.btn-ghost.active{background:var(--surface2);color:#fff}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-accent:hover{background:#7c6ff7}
+.btn-green{background:var(--green);color:#000}
+.btn-green:hover{background:#00e6b0}
+.btn-outline{background:transparent;border:2px solid var(--accent);color:var(--accent)}
+.btn-outline:hover{background:var(--accent);color:#fff}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.btn-danger{background:var(--red);color:#fff}
+.btn-danger:hover{opacity:.85}
+main{max-width:1200px;margin:0 auto;padding:24px}
+.section{display:none}
+.section.active{display:block}
+.section-title{font-size:1.4rem;font-weight:700;margin-bottom:20px}
+.auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;overflow-y:auto;padding:16px}
+.auth-box{background:var(--surface);border-radius:var(--radius);padding:32px;width:420px;max-width:100%;box-shadow:var(--shadow)}
+.auth-box h2{margin-bottom:20px;font-size:1.3rem}
+.auth-box input,.auth-box select,.form-group input,.form-group textarea,.form-group select{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.92rem;margin-bottom:12px;outline:none}
+.auth-box input:focus,.auth-box select:focus,.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent)}
+.auth-box .row{display:flex;gap:10px}
+.auth-box .row button{flex:1;padding:12px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;margin-bottom:5px;font-weight:600;font-size:.85rem;color:var(--muted)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.controls input,.controls select{padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;outline:none}
+.controls input:focus,.controls select:focus{border-color:var(--accent)}
+.controls input{flex:1;min-width:200px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.card{background:var(--surface);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);transition:.2s;cursor:default}
+.card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow)}
+.card-img{height:160px;background:linear-gradient(135deg,var(--surface2),var(--surface));display:flex;align-items:center;justify-content:center;font-size:3rem}
+.card-body{padding:16px}
+.card-body h3{font-size:1rem;margin-bottom:4px}
+.card-body .cat{font-size:.72rem;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.card-body .desc{font-size:.82rem;color:var(--muted);margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-body .price-row{display:flex;align-items:center;justify-content:space-between}
+.price{font-size:1.15rem;font-weight:700;color:var(--green)}
+.cart-item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);gap:12px}
+.cart-item h3{font-size:.95rem;flex:1;min-width:0}
+.cart-item .price{min-width:75px;text-align:right}
+.cart-summary{background:var(--surface);border-radius:var(--radius);padding:20px;margin-top:20px;border:1px solid var(--border)}
+.cart-summary .line{display:flex;justify-content:space-between;padding:6px 0;font-size:.9rem}
+.cart-summary .line.total{font-weight:700;font-size:1.1rem;border-top:1px solid var(--border);margin-top:6px;padding-top:12px}
+.cart-summary .line.commission{color:var(--gold)}
+.cart-summary .line.seller{color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;border:1px solid var(--border);text-align:center}
+.stat-card .val{font-size:2rem;font-weight:800}
+.stat-card .val.green{color:var(--green)}
+.stat-card .val.gold{color:var(--gold)}
+.stat-card .val.accent{color:var(--accent2)}
+.stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:4px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--radius);overflow:hidden}
+th,td{padding:12px 16px;text-align:left;font-size:.88rem}
+th{background:var(--surface2);font-weight:600;color:var(--muted);text-transform:uppercase;font-size:.75rem;letter-spacing:.5px}
+td{border-bottom:1px solid var(--border)}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .icon{font-size:4rem;margin-bottom:16px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--green);color:var(--text);padding:14px 20px;border-radius:8px;z-index:999;animation:slideIn .3s;box-shadow:var(--shadow);font-weight:600}
+.toast.error{border-color:var(--red)}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.hidden{display:none!important}
+.user-info{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.user-info .avatar{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
+small{font-size:.75rem}
+
+/* PAYMENT */
+.plain-input,.auth-box input[type=email],#resetBox input{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.92rem;margin-bottom:12px;outline:none}
+.plain-input:focus,#resetBox input:focus{border-color:var(--accent)}
+details summary{cursor:pointer;font-weight:700;padding:12px 0}
+.lang-sel{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:7px 8px;font-size:.8rem;outline:none;cursor:pointer}
+.chip{font-size:.7rem;padding:2px 8px;border-radius:10px;background:var(--surface2);display:inline-block;margin-bottom:6px}
+.role-badge{background:var(--accent);color:#fff;padding:1px 7px;border-radius:10px;font-size:.65rem;margin-left:4px;vertical-align:middle}
+.terms{margin:0 0 16px 18px;font-size:.85rem;color:var(--muted);line-height:1.5}
+.terms li{margin-bottom:8px}
+.purchase{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.pay-box{background:var(--surface2);border-radius:12px;padding:13px;margin:14px 0}
+.pay-box label{display:block;margin-bottom:5px;font-weight:600;font-size:.85rem;color:var(--muted)}
+.pay-err{display:none;color:var(--red);font-size:.75rem;margin:-6px 0 10px}
+.pay-total{background:var(--surface2);border-radius:8px;padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.pay-total strong{color:var(--green);font-size:1.2rem}
+.pay-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.pay-tab{padding:12px;border:2px solid var(--border);background:var(--bg);color:var(--text);border-radius:8px;cursor:pointer;font-weight:600;font-size:.88rem;transition:.2s}
+.pay-tab.active{border-color:var(--accent);background:var(--surface2)}
+.pay-note{font-size:.75rem;color:var(--muted);margin:4px 0 14px;line-height:1.4}
+.pay-center{text-align:center;padding:20px 0}
+.spinner{width:46px;height:46px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.receipt-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.receipt-item small{color:var(--muted);display:block}
+.ref{font-family:monospace;color:var(--gold)}
+
+@media(max-width:640px){
+  header{flex-direction:column;gap:10px;padding:12px}
+  nav{gap:4px}nav button{font-size:.78rem;padding:7px 10px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Digi<span>Market</span></div>
+  <nav id="nav">
+    <button class="btn btn-ghost active" data-section="market">🛒 Marketplace</button>
+    <button class="btn btn-ghost hidden" data-section="sell">📤 Sell</button>
+    <button class="btn btn-ghost hidden" data-section="cart">🛍 Cart <span id="cartBadge" style="background:var(--accent);padding:1px 7px;border-radius:10px;font-size:.7rem;display:none">0</span></button>
+    <button class="btn btn-ghost hidden" data-section="purchases">📥 Purchases</button>
+    <button class="btn btn-ghost hidden" data-section="settings">⚙️ Settings</button>
+    <button class="btn btn-ghost hidden" data-section="share">💰 Seller share request</button>
+    <button class="btn btn-ghost hidden" data-section="dashboard">📊 Dashboard</button>
+    <button class="btn btn-ghost hidden" data-section="reports">📈 Reports</button>
+  </nav>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+    <select id="langSel" class="lang-sel" onchange="setLang(this.value)" aria-label="Language">
+      <option value="en">🌐 English</option>
+      <option value="fr">🌐 Français</option>
+      <option value="rw">🌐 Kinyarwanda</option>
+    </select>
+    <div id="authArea">
+      <button class="btn btn-accent btn-sm" onclick="showAuth()">🔐 Login / Register</button>
+    </div>
+  </div>
+</header>
+
+<div id="authOverlay" class="auth-overlay hidden">
+  <div class="auth-box">
+    <h2 id="authTitle">🔐 Login</h2>
+    <input id="authName" placeholder="Your name" style="display:none">
+    <select id="authRole" style="display:none"><option value="buyer">🛍 I want to buy products</option><option value="seller">📤 I want to sell products</option></select>
+    <input id="authEmail" placeholder="Email address" type="email">
+    <input id="authPass" placeholder="Password" type="password">
+    <div class="row">
+      <button class="btn btn-accent" id="authBtn" onclick="handleAuth()">Login</button>
+      <button class="btn btn-outline" id="authToggle" onclick="toggleAuthMode()">Register</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="hideAuth()">Cancel</button>
+    <p style="text-align:center;margin-top:10px;font-size:.85rem"><a href="#" id="forgotLink" onclick="openReset(document.getElementById('authEmail').value);return false" style="color:var(--accent2)">Forgot password?</a></p>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div id="resetOverlay" class="auth-overlay hidden">
+  <div class="auth-box" id="resetBox"></div>
+</div>
+
+<div id="payOverlay" class="auth-overlay hidden">
+  <div class="auth-box" id="payBox"></div>
+</div>
+
+<main>
+  <!-- MARKETPLACE -->
+  <div id="section-market" class="section active">
+    <h2 class="section-title">🛒 Digital Marketplace</h2>
+    <div class="controls">
+      <input id="searchInput" placeholder="🔍 Search products..." oninput="renderMarket()">
+      <select id="catFilter" onchange="renderMarket()">
+        <option value="">All Categories</option>
+        <option value="ebooks">📚 E-books & Guides</option>
+        <option value="templates">🎨 Templates</option>
+        <option value="software">💻 Software & Scripts</option>
+        <option value="music">🎵 Music & Audio</option>
+        <option value="design">🖌️ Design Assets</option>
+        <option value="courses">🎓 Online Courses</option>
+      </select>
+      <select id="sortBy" onchange="renderMarket()">
+        <option value="newest">Newest</option>
+        <option value="priceLow">Price: Low → High</option>
+        <option value="priceHigh">Price: High → Low</option>
+        <option value="popular">Most Sold</option>
+      </select>
+    </div>
+    <div id="productGrid" class="grid"></div>
+    <div id="marketEmpty" class="empty hidden"><div class="icon">📦</div><p>No products found. Be the first to sell!</p></div>
+  </div>
+
+  <!-- SELL -->
+  <div id="section-sell" class="section">
+    <h2 class="section-title">📤 Sell a Digital Product</h2>
+    <div id="sellLoginPrompt" class="empty"><div class="icon">🔐</div><p>Please <a href="#" onclick="showAuth();return false" style="color:var(--accent2)">login</a> to start selling.</p></div>
+    <div id="sellRolePrompt" class="empty hidden"><div class="icon">🛍</div><p>You are logged in as a <b>buyer</b>. Only seller accounts can upload products.<br>To sell, register a new account and choose "I want to sell products".</p></div>
+    <div id="sellAgreement" class="hidden">
+      <div class="cart-summary" style="margin-top:0">
+        <h3 style="margin-bottom:6px">📝 Seller Profit-Sharing Agreement</h3>
+        <p class="pay-note">You must sign this agreement before you can upload products.</p>
+        <ol class="terms">
+          <li><b>Revenue share.</b> For every confirmed sale of your product, <b style="color:var(--green)">you receive 70%</b> and <b style="color:var(--gold)">DigiMarket (admin) keeps 30%</b> of the listed price.</li>
+          <li><b>How payment works.</b> Customers pay DigiMarket. A sale counts only after DigiMarket confirms the payment. Your 70% share is then paid to your mobile money number on the payout schedule DigiMarket announces.</li>
+          <li><b>Your content.</b> You confirm that you own, or have the right to sell, everything you upload. Pirated, illegal or harmful content is not allowed.</li>
+          <li><b>Prices.</b> You set the price in RWF. The 30% is taken from that price, so customers pay only the listed price.</li>
+          <li><b>Removal and refunds.</b> DigiMarket may remove products that break these terms and may deduct the share of refunded or fraudulent sales from your earnings.</li>
+          <li><b>Signing.</b> Typing your full name and ticking the box below counts as your signature. The date and time are recorded.</li>
+        </ol>
+        <div class="form-group"><input id="agreeName" placeholder="Type your full name to sign"></div>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:.85rem;margin-bottom:14px;cursor:pointer"><input type="checkbox" id="agreeCheck" style="width:auto;margin:3px 0 0"> I have read and accept the 70% seller / 30% DigiMarket profit-sharing agreement.</label>
+        <button class="btn btn-green" style="width:100%;padding:12px" onclick="signAgreement()">✍️ Sign &amp; Continue</button>
+      </div>
+    </div>
+    <form id="sellForm" class="hidden" onsubmit="return publishProduct(event)">
+      <div class="form-group"><label>Product Name *</label><input id="prodName" required placeholder="e.g. Ultimate Social Media Template Pack"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Category *</label><select id="prodCat" required><option value="">Select...</option><option value="ebooks">E-books & Guides</option><option value="templates">Templates</option><option value="software">Software & Scripts</option><option value="music">Music & Audio</option><option value="design">Design Assets</option><option value="courses">Online Courses</option></select></div>
+        <div class="form-group"><label>Price (RWF) *</label><input id="prodPrice" type="number" min="100" step="1" required placeholder="5000"></div>
+      </div>
+      <div class="form-group"><label>Description *</label><textarea id="prodDesc" rows="3" required placeholder="Describe what you're selling..."></textarea></div>
+      <div class="form-group"><label>Upload Digital File *</label><input id="prodFile" type="file" required><small style="color:var(--muted)">PDF, ZIP, MP3, MP4, PNG, etc.</small></div>
+      <div class="form-group" style="background:var(--surface2);border-radius:8px;padding:14px">
+        <strong style="color:var(--gold)">💡 Commission Split:</strong><br>
+        <span style="color:var(--muted)">Platform takes 30% · You earn <span id="earnPreview" style="color:var(--green);font-weight:700">70%</span></span>
+      </div>
+      <button class="btn btn-green" style="width:100%;padding:14px;font-size:1rem">📤 Publish Product</button>
+    </form>
+  </div>
+
+  <!-- CART -->
+  <div id="section-cart" class="section">
+    <h2 class="section-title">🛍 Your Cart</h2>
+    <div id="cartItems"></div>
+    <div id="cartEmpty" class="empty"><div class="icon">🛒</div><p>Your cart is empty. Browse the marketplace!</p></div>
+    <div id="cartSummary" class="cart-summary hidden">
+      <div class="line"><span>Subtotal</span><span id="subtotalVal">RWF 0</span></div>
+      <div class="line commission"><span>🔸 Platform Fee (30%)</span><span id="feeVal">RWF 0</span></div>
+      <div class="line seller"><span>💰 Sellers Earn (70%)</span><span id="sellerVal">RWF 0</span></div>
+      <div class="line total"><span>🧾 You Pay</span><span id="totalVal">RWF 0</span></div>
+      <button class="btn btn-green" style="width:100%;margin-top:14px;padding:14px;font-size:1rem" onclick="checkout()">💳 Proceed to Payment</button>
+    </div>
+  </div>
+
+  <!-- PURCHASES -->
+  <div id="section-purchases" class="section">
+    <h2 class="section-title">📥 My Purchases</h2>
+    <div id="purchasesList"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="section-settings" class="section">
+    <h2 class="section-title">⚙️ Settings</h2>
+    <div class="cart-summary" style="margin-top:0">
+      <h3 style="margin-bottom:10px">👤 My account</h3>
+      <div class="receipt-item"><span>Name</span><b id="setName"></b></div>
+      <div class="receipt-item"><span>Email</span><b id="setEmail"></b></div>
+      <div class="receipt-item" style="border:none"><span>Role</span><b id="setRole"></b></div>
+    </div>
+    <div class="cart-summary">
+      <h3 style="margin-bottom:12px">🔑 Change password</h3>
+      <input id="pwOld" type="password" placeholder="Current password" class="plain-input">
+      <input id="pwNew" type="password" placeholder="New password" class="plain-input">
+      <input id="pwNew2" type="password" placeholder="Confirm new password" class="plain-input">
+      <button class="btn btn-green" style="width:100%;padding:12px" onclick="changePassword()">🔑 Update password</button>
+      <p class="pay-note" style="margin-top:12px">Forgot your current password? <a href="#" onclick="openReset(currentUser.email);return false" style="color:var(--accent2)">Send a code to my email</a></p>
+    </div>
+  </div>
+
+  <!-- SELLER SHARE REQUEST -->
+  <div id="section-share" class="section">
+    <h2 class="section-title">💰 Request your share</h2>
+    <div class="stats">
+      <div class="stat-card"><div class="val green" id="shareEarned">0</div><div class="lbl">Earned (70%) (RWF)</div></div>
+      <div class="stat-card"><div class="val accent" id="sharePaid">0</div><div class="lbl">Already paid out (RWF)</div></div>
+      <div class="stat-card"><div class="val gold" id="sharePending">0</div><div class="lbl">Pending requests (RWF)</div></div>
+      <div class="stat-card"><div class="val green" id="shareAvail">0</div><div class="lbl">Available to request (RWF)</div></div>
+    </div>
+    <div class="form-group"><label>Full names *</label><input id="shareName" placeholder="Your full names"></div>
+    <div class="form-group"><label>Phone number *</label><input id="sharePhone" type="tel" inputmode="numeric" placeholder="Phone e.g. 0788123456"></div>
+    <div class="form-group"><label>How do you want to be paid? *</label>
+      <select id="shareMethod" onchange="toggleShareMethod()"><option value="momo">📱 Mobile Money</option><option value="bank">🏦 Bank account</option></select></div>
+    <div id="shareMomo" class="form-group"><label>Mobile Money network *</label>
+      <select id="shareNetwork"><option value="MTN MoMo">MTN Mobile Money</option><option value="Airtel Money">Airtel Money</option></select>
+      <small style="color:var(--muted)">Your share will be sent to the phone number above.</small></div>
+    <div id="shareBank" class="hidden">
+      <div class="form-group"><label>Bank name *</label><input id="shareBankName" placeholder="e.g. Bank of Kigali"></div>
+      <div class="form-group"><label>Account number *</label><input id="shareBankAccount" placeholder="Account number"></div>
+      <div class="form-group"><label>Account holder name *</label><input id="shareBankHolder" placeholder="Name on the account"></div>
+    </div>
+    <div class="form-group"><label>Amount requested (RWF) *</label><input id="shareAmount" type="number" min="1000" step="1" inputmode="numeric" placeholder="5000"></div>
+    <p class="pay-note">Your request goes to the admin. After it is approved, you are paid by the method you choose.</p>
+    <button class="btn btn-green" style="width:100%;padding:14px;font-size:1rem" onclick="submitShare()">📨 Send request</button>
+    <h3 style="margin:28px 0 12px">📋 My requests</h3>
+    <div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Note</th></tr></thead>
+    <tbody id="shareReqs"><tr><td colspan="5" style="text-align:center;color:var(--muted)">No requests yet</td></tr></tbody></table></div>
+  </div>
+
+  <!-- REPORTS (admin) -->
+  <div id="section-reports" class="section">
+    <h2 class="section-title">📈 Admin Reports</h2>
+    <div id="reportsBox"><div class="empty"><p>Loading…</p></div></div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="section-dashboard" class="section">
+    <h2 class="section-title">📊 Seller Dashboard</h2>
+    <div id="dashLoginPrompt" class="empty"><div class="icon">🔐</div><p>Please <a href="#" onclick="showAuth();return false" style="color:var(--accent2)">login</a> to view your dashboard.</p></div>
+    <div id="dashContent" class="hidden">
+      <p class="pay-note" id="dashShare" style="margin:0 0 14px"></p>
+      <div id="adminBox" class="hidden"></div>
+      <div class="stats">
+        <div class="stat-card"><div class="val green" id="dashProducts">0</div><div class="lbl">Products Listed</div></div>
+        <div class="stat-card"><div class="val accent" id="dashSold">0</div><div class="lbl">Total Sales</div></div>
+        <div class="stat-card"><div class="val gold" id="dashRevenue">0.00</div><div class="lbl">Gross Revenue (RWF)</div></div>
+        <div class="stat-card"><div class="val green" id="dashEarnings">0.00</div><div class="lbl">Your Earnings — 70% (RWF)</div></div>
+        <div class="stat-card"><div class="val accent" id="dashPaidOut">0</div><div class="lbl">Paid out to you (RWF)</div></div>
+        <div class="stat-card"><div class="val gold" id="dashBalance">0</div><div class="lbl">Balance due to you (RWF)</div></div>
+      </div>
+      <h3 style="margin-bottom:12px">📋 Recent Transactions</h3>
+      <div style="overflow-x:auto">
+        <table><thead><tr><th>Date</th><th>Product</th><th>Buyer</th><th>Paid Via</th><th>Price</th><th>Fee (30%)</th><th>You Earned</th></tr></thead>
+        <tbody id="dashTxns"><tr><td colspan="7" style="text-align:center;color:var(--muted)">No sales yet</td></tr></tbody></table>
+      </div>
+      <h3 style="margin:24px 0 12px">💸 Payouts Received</h3>
+      <div style="overflow-x:auto"><table><thead><tr><th>Date</th><th>Amount</th><th>Note</th></tr></thead>
+      <tbody id="dashPayouts"><tr><td colspan="3" style="text-align:center;color:var(--muted)">No payouts yet</td></tr></tbody></table></div>
+      <h3 style="margin:24px 0 12px">📦 My Listings</h3>
+      <div id="dashListings" class="grid"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+// ── SETTINGS ──
+// Paste your Google Apps Script Web App URL (see Code.gs). Empty = everything stays in this browser (demo mode).
+const API_URL = "";
+
+// ── STATE (localStorage persistence) ──
+const LS = k => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } };
+const SS = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+
+let currentUser = LS('currentUser');
+let users       = API_URL ? [] : (LS('users') || []);
+let products    = API_URL ? [] : (LS('products') || []);
+let cart        = LS('cart') || [];
+let transactions = API_URL ? [] : (LS('transactions') || []);
+let payouts      = API_URL ? [] : (LS('payouts') || []);
+let requests     = API_URL ? [] : (LS('requests') || []);
+
+const CAT_ICONS = { ebooks:'📚', templates:'🎨', software:'💻', music:'🎵', design:'🖌️', courses:'🎓' };
+
+function uid(){ return 'u' + Date.now() + Math.random().toString(36).slice(2); }
+function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function money(n){ return 'RWF ' + Math.round(n).toLocaleString('en-US'); }
+function num(n){ return Math.round(n).toLocaleString('en-US'); }
+
+// ── SEED DEMO DATA ──
+// Demo mode starts empty: no sample products and no sample accounts.
+// (The admin is whoever registers with ADMIN_EMAIL, see the payment settings.)
+function seedDemo(){
+  products = []; users = [];
+  SS('products', products); SS('users', users);
+  currentUser = null; SS('currentUser', null);
+  transactions = []; SS('transactions', []); cart = []; SS('cart', []);
+  payouts = []; SS('payouts', []); requests = []; SS('requests', []);
+}
+if (!API_URL && LS('seedV') !== 4) { seedDemo(); SS('seedV', 4); }
+
+// ── REMOTE MODE (Google Apps Script backend, see Code.gs) ──
+function isAdmin(){ return !!currentUser && (API_URL ? !!currentUser.isAdmin : currentUser.email === ADMIN_EMAIL); }
+
+async function api(action, data){
+  const r = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ action, token: LS('token') }, data || {}))
+  });
+  const j = await r.json();
+  if (j.error) throw new Error(j.error);
+  return j;
+}
+function clearSession(){
+  currentUser = null; SS('currentUser', null); SS('token', null);
+  transactions = []; payouts = []; requests = []; usersList = []; updateUI();
+}
+async function syncRemote(){
+  try {
+    const j = await (await fetch(API_URL + '?action=products')).json();
+    products = j.products || [];
+    if (LS('token')) { const sy = await api('sync'); transactions = sy.orders || []; payouts = sy.payouts || []; requests = sy.requests || []; usersList = sy.users || []; products = products.concat(sy.products || []); }
+    else { transactions = []; payouts = []; requests = []; usersList = []; }
+  } catch (e) {
+    sessionError(e);
+  }
+  renderAll();
+}
+async function initRemote(){
+  if (LS('token')) {
+    try { currentUser = (await api('me')).user; SS('currentUser', currentUser); }
+    catch (e) { sessionError(e); }
+  }
+  updateUI();
+  await syncRemote();
+}
+function publishRemote(d){
+  if (d.file.size > 8 * 1024 * 1024) return toast('File too large (max 8 MB)', 'error');
+  toast('Uploading…');
+  const rd = new FileReader();
+  rd.onload = async () => {
+    try {
+      await api('addProduct', { name: d.name, cat: d.cat, desc: d.desc, price: d.price,
+        fileName: d.file.name, mime: d.file.type, base64: String(rd.result).split(',')[1] });
+      document.getElementById('sellForm').reset();
+      document.getElementById('earnPreview').textContent = '70%';
+      toast(userRole() === 'admin' ? 'Product published! 🚀' : 'Product submitted! Waiting for admin approval.');
+      await syncRemote();
+    } catch (err) { toast(err.message, 'error'); }
+  };
+  rd.onerror = () => toast('Could not read the file', 'error');
+  rd.readAsDataURL(d.file);
+}
+
+// ── AUTH ──
+let authMode = 'login';
+function showAuth(){ document.getElementById('authOverlay').classList.remove('hidden'); syncAuthUI(); }
+function hideAuth(){ document.getElementById('authOverlay').classList.add('hidden'); }
+function toggleAuthMode(){ authMode = authMode==='login' ? 'register' : 'login'; syncAuthUI(); }
+function syncAuthUI(){
+  document.getElementById('forgotLink').parentElement.style.display = authMode === 'login' ? 'block' : 'none';
+  document.getElementById('authRole').style.display = authMode==='login' ? 'none' : 'block';
+  document.getElementById('authTitle').textContent = authMode==='login' ? '🔐 Login' : '📝 Register';
+  document.getElementById('authName').style.display = authMode==='login' ? 'none' : 'block';
+  document.getElementById('authBtn').textContent = authMode==='login' ? 'Login' : 'Create Account';
+  document.getElementById('authToggle').textContent = authMode==='login' ? 'Create account instead' : 'Login instead';
+}
+async function handleAuth(){
+  const name  = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  const pass  = document.getElementById('authPass').value;
+  if (!email || !pass) return toast('Please fill all fields', 'error');
+  if (authMode === 'register' && !name) return toast('Please enter your name', 'error');
+
+  if (API_URL) {
+    try {
+      const r = await api(authMode, { name, email, pass, role: document.getElementById('authRole').value });
+      SS('token', r.token); currentUser = r.user; SS('currentUser', currentUser);
+      hideAuth(); updateUI(); await syncRemote();
+      toast(authMode === 'register' ? 'Welcome, ' + r.user.name + '! 🎉' : 'Welcome back, ' + r.user.name + '! 👋');
+      if (authMode === 'register' && r.user.role === 'seller') goSection('sell');
+    } catch (err) { toast(err.message, 'error'); }
+    return;
+  }
+
+  if (authMode === 'register') {
+    if (users.find(u => u.email === email)) return toast('Email already registered', 'error');
+    const user = { id: uid(), name, email, pass, role: document.getElementById('authRole').value };
+    users.push(user); SS('users', users);
+    currentUser = user; SS('currentUser', currentUser);
+    hideAuth(); updateUI(); renderAll(); toast('Welcome, ' + name + '! 🎉');
+    if (user.role === 'seller') goSection('sell');
+  } else {
+    const user = users.find(u => u.email === email && u.pass === pass);
+    if (!user) return toast('Invalid email or password', 'error');
+    if (user.blocked) return toast('Your account is blocked. Contact the admin.', 'error');
+    currentUser = user; SS('currentUser', currentUser);
+    hideAuth(); updateUI(); renderAll(); toast('Welcome back, ' + user.name + '! 👋');
+  }
+}
+function logout(){
+  currentUser = null; SS('currentUser', null); SS('token', null);
+  if (API_URL) transactions = [];
+  cart = []; SS('cart', []);
+  updateUI(); renderAll(); toast('Logged out');
+}
+
+// ── UI ──
+function updateUI(){
+  const authArea = document.getElementById('authArea');
+  const r = userRole();
+  if (currentUser) {
+    const label = { admin: 'Admin', seller: 'Seller', buyer: 'Buyer' }[r];
+    authArea.innerHTML = `<div class="user-info"><div class="avatar">${esc(currentUser.name[0])}</div><span>${esc(currentUser.name)} <small class="role-badge">${label}</small></span><button class="btn btn-ghost btn-sm" onclick="logout()">Logout</button></div>`;
+  } else {
+    authArea.innerHTML = '<button class="btn btn-accent btn-sm" onclick="showAuth()">🔐 Login / Register</button>';
+  }
+  document.getElementById('dashLoginPrompt').classList.toggle('hidden', canSell());
+  document.getElementById('dashContent').classList.toggle('hidden', !canSell());
+  updateNav();
+  updateSellView();
+  updateCartBadge();
+}
+
+// ── ROLES: guest · buyer · seller · admin ──
+function userRole(){
+  if (!currentUser) return null;
+  if (isAdmin()) return 'admin';
+  return currentUser.role === 'seller' ? 'seller' : 'buyer';
+}
+function canSell(){ const r = userRole(); return r === 'seller' || r === 'admin'; }
+function hasAgreed(){ return userRole() === 'admin' || (!!currentUser && !!currentUser.agreedAt); }
+
+function goSection(name){
+  const b = document.querySelector('#nav button[data-section="' + name + '"]');
+  if (b) b.click();
+}
+function updateNav(){
+  const r = userRole();
+  const show = { market: true, sell: canSell(), cart: !!r, purchases: !!r, dashboard: canSell(), reports: r === 'admin', share: r === 'seller', settings: !!r };
+  document.querySelectorAll('#nav button[data-section]').forEach(b => b.classList.toggle('hidden', !show[b.dataset.section]));
+  const active = document.querySelector('.section.active');
+  if (active && !show[active.id.replace('section-', '')]) goSection('market');
+}
+function updateSellView(){
+  const r = userRole();
+  document.getElementById('sellLoginPrompt').classList.toggle('hidden', !!r);
+  document.getElementById('sellRolePrompt').classList.toggle('hidden', r !== 'buyer');
+  document.getElementById('sellAgreement').classList.toggle('hidden', !(canSell() && !hasAgreed()));
+  document.getElementById('sellForm').classList.toggle('hidden', !(canSell() && hasAgreed()));
+}
+
+async function signAgreement(){
+  const typed = document.getElementById('agreeName').value.trim();
+  if (typed.length < 3) return toast('Type your full name to sign', 'error');
+  if (!document.getElementById('agreeCheck').checked) return toast('Please tick the box to accept', 'error');
+  if (API_URL) {
+    try {
+      const r = await api('signAgreement', { fullName: typed, accept: true });
+      currentUser = r.user; SS('currentUser', currentUser);
+    } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const u = users.find(x => x.id === currentUser.id);
+    if (u) { u.agreedAt = Date.now(); u.agreedName = typed; SS('users', users); }
+    currentUser = Object.assign({}, currentUser, { agreedAt: Date.now(), agreedName: typed });
+    SS('currentUser', currentUser);
+  }
+  toast('Agreement signed ✅ You can now upload products');
+  updateSellView(); renderAll();
+}
+
+function updateCartBadge(){
+  const badge = document.getElementById('cartBadge');
+  if (cart.length) { badge.style.display = 'inline'; badge.textContent = cart.length; }
+  else { badge.style.display = 'none'; }
+}
+function toast(msg, type){
+  msg = T(msg);
+  const t = document.createElement('div');
+  t.className = 'toast' + (type==='error' ? ' error' : '');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// ── NAVIGATION ──
+document.getElementById('nav').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-section]');
+  if (!btn) return;
+  document.querySelectorAll('#nav button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + btn.dataset.section).classList.add('active');
+  renderAll();
+  if (API_URL) syncRemote();
+});
+
+function renderAll(){
+  renderMarket(); renderCart(); renderPurchases(); renderDashboard(); renderShare(); renderSettings();
+  if (document.getElementById('section-reports').classList.contains('active')) renderReports();
+}
+
+// ── MARKETPLACE ──
+function renderMarket(){
+  const grid  = document.getElementById('productGrid');
+  const empty = document.getElementById('marketEmpty');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const cat   = document.getElementById('catFilter').value;
+  const sort  = document.getElementById('sortBy').value;
+
+  let filtered = products.filter(p => {
+    if ((p.status || 'approved') !== 'approved') return false;
+    if (!API_URL && users.some(u => u.id === p.sellerId && u.blocked)) return false;
+    if (cat && p.cat !== cat) return false;
+    if (search && !p.name.toLowerCase().includes(search) && !p.desc.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if (sort === 'priceLow')  filtered.sort((a,b) => a.price - b.price);
+  else if (sort === 'priceHigh') filtered.sort((a,b) => b.price - a.price);
+  else if (sort === 'popular')   filtered.sort((a,b) => b.sales - a.sales);
+  else filtered.sort((a,b) => b.created - a.created);
+
+  if (!filtered.length) { grid.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="card">
+      <div class="card-img">${CAT_ICONS[p.cat] || '📦'}</div>
+      <div class="card-body">
+        <div class="cat">${esc(p.cat)}</div>
+        <h3>${esc(p.name)}</h3>
+        <div class="desc">${esc(p.desc)}</div>
+        <div style="font-size:.73rem;color:var(--muted);margin-bottom:8px">👤 ${esc(p.sellerName)} · 🔥 ${p.sales} sold</div>
+        <div class="price-row">
+          <span class="price">${money(p.price)}</span>
+          <button class="btn btn-accent btn-sm" onclick="addToCart('${p.id}')">+ Cart</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addToCart(pid){
+  if (!currentUser) { toast('Please login or register to add items', 'error'); showAuth(); return; }
+  const p = products.find(x => x.id === pid);
+  if (p && p.sellerId === currentUser.id) return toast("You can't buy your own product", 'error');
+  if (cart.includes(pid)) { toast('Already in cart!', 'error'); return; }
+  cart.push(pid); SS('cart', cart); updateCartBadge(); toast('Added to cart ✅');
+}
+
+// ── SELL ──
+function publishProduct(e){
+  e.preventDefault();
+  if (!currentUser) return toast('Please login first', 'error');
+  if (!canSell()) return toast('Only seller accounts can upload products', 'error');
+  if (!hasAgreed()) return toast('Please sign the seller agreement first', 'error');
+  const name  = document.getElementById('prodName').value.trim();
+  const cat   = document.getElementById('prodCat').value;
+  const price = parseFloat(document.getElementById('prodPrice').value);
+  const desc  = document.getElementById('prodDesc').value.trim();
+  const file  = document.getElementById('prodFile').files[0];
+  if (!name || !cat || !price || !desc || !file) return toast('All fields required', 'error');
+  if (API_URL) return publishRemote({ name, cat, desc, price, file });
+  const product = {
+    id: uid(), name, cat, desc, price, file: file.name,
+    sellerId: currentUser.id, sellerName: currentUser.name,
+    sales: 0, created: Date.now(), status: userRole() === 'admin' ? 'approved' : 'pending'
+  };
+  putFile(product.id, file).then(() => {
+    products.unshift(product); SS('products', products);
+    document.getElementById('sellForm').reset();
+    document.getElementById('earnPreview').textContent = '70%';
+    toast(product.status === 'approved' ? 'Product published! 🚀' : 'Product submitted! Waiting for admin approval.');
+    renderAll();
+  }).catch(() => toast('Could not store the file. Try a smaller file.', 'error'));
+}
+
+document.getElementById('prodPrice').addEventListener('input', function(){
+  const p = parseFloat(this.value) || 0;
+  document.getElementById('earnPreview').textContent = p ? money(p * 0.70) + ' (70%)' : '70%';
+});
+
+// ── CART ──
+function renderCart(){
+  const items   = document.getElementById('cartItems');
+  const empty   = document.getElementById('cartEmpty');
+  const summary = document.getElementById('cartSummary');
+  if (!cart.length) { items.innerHTML = ''; empty.classList.remove('hidden'); summary.classList.add('hidden'); return; }
+  empty.classList.add('hidden');
+  summary.classList.remove('hidden');
+
+  const cartProducts = cart.map(pid => products.find(p => p.id === pid)).filter(Boolean);
+  const subtotal = cartProducts.reduce((s, p) => s + p.price, 0);
+
+  items.innerHTML = cartProducts.map(p => `
+    <div class="cart-item">
+      <span style="font-size:1.5rem">${CAT_ICONS[p.cat] || '📦'}</span>
+      <h3>${esc(p.name)}<br><small style="color:var(--muted)">by ${esc(p.sellerName)}</small></h3>
+      <span class="price">${money(p.price)}</span>
+      <button class="btn btn-danger btn-sm" onclick="removeFromCart('${p.id}')">✕</button>
+    </div>
+  `).join('');
+
+  document.getElementById('subtotalVal').textContent = money(subtotal);
+  document.getElementById('feeVal').textContent      = money(subtotal * 0.30);
+  document.getElementById('sellerVal').textContent   = money(subtotal * 0.70);
+  document.getElementById('totalVal').textContent    = money(subtotal);
+}
+
+function removeFromCart(pid){
+  cart = cart.filter(id => id !== pid); SS('cart', cart);
+  updateCartBadge(); renderCart();
+}
+
+// ── PAYMENT (USSD dial + transaction ID + WhatsApp, same flow as Bisoke project) ──
+const MTN_NUMBER  = "0739470514";     // number customers pay to
+const WHATSAPP    = "250739470514";   // orders and payment proof are sent to this WhatsApp number (0739470514)
+const ADMIN_EMAIL = "ngirufidele1@gmail.com";   // this account can confirm payments in the Dashboard
+const INSTANT_DELIVERY = false;      // true = files download immediately; false = after you confirm the payment
+let lastOrder = null;
+
+function cartLines(){ return cart.map(pid => products.find(p => p.id === pid)).filter(Boolean); }
+function cartTotal(){ return cartLines().reduce((s,p) => s + p.price, 0); }
+
+function checkout(){
+  if (!currentUser) { toast('Please login to checkout', 'error'); showAuth(); return; }
+  if (!cart.length) return toast('Cart is empty', 'error');
+  document.getElementById('payOverlay').classList.remove('hidden');
+  renderPayForm();
+}
+function closePay(){ document.getElementById('payOverlay').classList.add('hidden'); }
+
+function renderPayForm(){
+  const items = cartLines(), total = cartTotal();
+  document.getElementById('payBox').innerHTML = `
+    <h2>🧾 Confirm your order</h2>
+    ${items.map(p => `<div class="receipt-item"><span>${esc(p.name)}</span><span>${money(p.price)}</span></div>`).join('')}
+    <div class="receipt-item" style="font-weight:700"><span>Total</span><span style="color:var(--green)">${money(total)}</span></div>
+    <div class="pay-box">
+      <label>Payment method</label>
+      <select id="payMethod" onchange="renderPayCode()">
+        <option value="MTN MoMo">MTN Mobile Money</option>
+        <option value="Airtel Money">Airtel Money</option>
+      </select>
+      <div class="receipt-item" style="border:none"><span>Payment number</span><b>${MTN_NUMBER}</b></div>
+      <div class="receipt-item" style="border:none"><span>WhatsApp for payment proof</span><b>0${WHATSAPP.slice(3)}</b></div>
+      <a id="payLink" class="btn btn-accent" style="display:block;text-align:center;text-decoration:none" href="#"></a>
+      <p class="pay-note" id="payNote"></p>
+      <p class="pay-note">After paying, enter your phone number and the transaction ID shown in the SMS.</p>
+    </div>
+    <input id="payName" placeholder="Your name" value="${esc(currentUser.name)}">
+    <p class="pay-err" id="errName">Enter your name.</p>
+    <input id="payPhone" type="tel" inputmode="numeric" placeholder="Your phone e.g. 0788123456">
+    <p class="pay-err" id="errPhone">Enter a valid phone number.</p>
+    <input id="payTxn" placeholder="Transaction ID from SMS e.g. MP240911.1234.A56789">
+    <p class="pay-err" id="errTxn">Enter the transaction ID.</p>
+    <button class="btn btn-green" style="width:100%;padding:14px;font-size:1rem" id="sendBtn" onclick="sendOrder()">📲 Send order on WhatsApp</button>
+    <p class="pay-note" style="margin-top:8px">WhatsApp opens with your full order. Tap "Send" so the DigiMarket team receives it and confirms your payment.</p>
+    <button class="btn btn-ghost btn-sm" style="width:100%" onclick="closePay()">Go back</button>
+  `;
+  renderPayCode();
+}
+
+function renderPayCode(){
+  const mtn = document.getElementById('payMethod').value === 'MTN MoMo';
+  const ussd = `*182*1*${mtn ? 2 : 1}*${MTN_NUMBER}*${cartTotal()}#`;
+  const link = document.getElementById('payLink');
+  link.textContent = mtn ? 'Tap here to pay with MTN' : 'Tap here to pay with Airtel';
+  link.href = 'tel:' + ussd.replace(/#/g, '%23');
+  document.getElementById('payNote').innerHTML = `Tap the button above; your phone opens the dialer with this code: <b>${ussd}</b>. Press "Call", then confirm with your PIN. If it does not open, copy the code and dial it on your phone.`;
+}
+
+async function sendOrder(){
+  const name  = document.getElementById('payName').value.trim();
+  const phone = document.getElementById('payPhone').value.trim();
+  const txn   = document.getElementById('payTxn').value.trim();
+  const dup   = transactions.some(t => (t.txn || '').toLowerCase() === txn.toLowerCase());
+  const okPhone = /^(\+?250|0)7\d{8}$/.test(phone.replace(/\s/g, ''));
+  document.getElementById('errName').style.display  = name ? 'none' : 'block';
+  document.getElementById('errPhone').style.display = okPhone ? 'none' : 'block';
+  const eT = document.getElementById('errTxn');
+  eT.textContent = dup ? 'This transaction ID was already used.' : 'Enter the transaction ID.';
+  eT.style.display = (txn && !dup) ? 'none' : 'block';
+  if (!name || !okPhone || !txn || dup) return;
+
+  const items = cartLines(), total = cartTotal();
+  const method = document.getElementById('payMethod').value;
+  const btn = document.getElementById('sendBtn');
+  let ref = 'ORD-' + Date.now().toString().slice(-6);
+
+  if (API_URL) {
+    // the server checks prices, duplicates and stores the order for everyone
+    btn.disabled = true; btn.textContent = 'Sending order…';
+    try {
+      const r = await api('createOrder', { productIds: items.map(p => p.id), name, phone, txn, method });
+      ref = r.ref;
+      r.orders.forEach(o => { transactions = transactions.filter(t => t.id !== o.id); transactions.push(o); });
+    } catch (err) {
+      btn.disabled = false; btn.textContent = '📲 Send order on WhatsApp';
+      return toast(err.message, 'error');
+    }
+  } else {
+    // Group by seller; stays "pending" until the DigiMarket team confirms the payment
+    const bySeller = {};
+    items.forEach(p => {
+      if (!bySeller[p.sellerId]) bySeller[p.sellerId] = { products: [], total: 0, sellerName: p.sellerName };
+      bySeller[p.sellerId].products.push(p);
+      bySeller[p.sellerId].total += p.price;
+    });
+    Object.entries(bySeller).forEach(([sid, d]) => {
+      transactions.push({
+        id: uid(), ref, status: INSTANT_DELIVERY ? 'paid' : 'pending',
+        productIds: d.products.map(p => p.id),
+        productNames: d.products.map(p => p.name).join(', '),
+        buyerId: currentUser.id, buyerName: name, phone, txn, method,
+        sellerId: sid, sellerName: d.sellerName,
+        price: d.total, fee: d.total * 0.30, sellerCut: d.total * 0.70,
+        date: Date.now()
+      });
+    });
+    SS('transactions', transactions);
+    if (INSTANT_DELIVERY) { items.forEach(p => p.sales++); SS('products', products); }
+  }
+
+  const msg = `ORDER ${ref} - DIGIMARKET\n\n`
+    + items.map(p => `- ${p.name} = ${money(p.price)}`).join('\n')
+    + `\n\nTotal: ${money(total)}\nMethod: ${method}\nName: ${name}\nTel: ${phone}\nTransaction ID: ${txn}`;
+  const waUrl = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+  window.open(waUrl, '_blank');
+
+  lastOrder = orderFromRef(ref);
+  cart = []; SS('cart', cart); updateCartBadge(); renderAll();
+  const paid = lastOrder.status === 'paid';
+
+  downloadReceipt(ref);                                             // receipt downloads straight away
+  if (paid) setTimeout(() => downloadOrderProducts(ref), 800);
+
+  document.getElementById('payBox').innerHTML = `
+    <div class="pay-center">
+      <div style="font-size:3rem">✅</div>
+      <h2 style="margin:6px 0">Thank you!</h2>
+      <p class="pay-note">Your order <span class="ref">${esc(ref)}</span> is saved and your receipt has been downloaded.<br><br>
+      ${paid ? 'Your product files are downloading now.' : 'Your product download unlocks in <b>My Purchases</b> as soon as our team confirms your payment.'}</p>
+      <p class="pay-note">Send your payment proof (screenshot of the payment SMS) to WhatsApp <b>0${WHATSAPP.slice(3)}</b>.</p>
+    </div>
+    <a class="btn btn-green" style="display:block;text-align:center;text-decoration:none;padding:12px;margin-bottom:8px" href="${waUrl}" target="_blank" rel="noopener">📲 Send order on WhatsApp</a>
+    ${paid ? `<button class="btn btn-accent" style="width:100%;padding:12px;margin-bottom:8px" onclick="downloadOrderProducts('${esc(ref)}')">⬇️ Download product(s) again</button>` : ''}
+    <button class="btn btn-accent" style="width:100%;padding:12px;margin-bottom:8px" onclick="goPurchases()">📥 Go to My Purchases</button>
+    <button class="btn btn-outline" style="width:100%;padding:12px;margin-bottom:8px" onclick="downloadReceipt('${esc(ref)}')">🧾 Download receipt again</button>
+    <button class="btn btn-ghost btn-sm" style="width:100%" onclick="closePay()">Close</button>
+  `;
+}
+
+function goPurchases(){
+  closePay();
+  document.querySelector('#nav button[data-section="purchases"]').click();
+}
+
+// ── FILES (uploaded products are stored in the browser's IndexedDB) ──
+function idb(){
+  return new Promise((res, rej) => {
+    const r = indexedDB.open('digimarket', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('files');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function putFile(id, blob){
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('files', 'readwrite');
+    tx.objectStore('files').put(blob, id);
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error);
+  });
+}
+async function getFile(id){
+  const db = await idb();
+  return new Promise((res, rej) => {
+    const q = db.transaction('files').objectStore('files').get(id);
+    q.onsuccess = () => res(q.result || null);
+    q.onerror = () => rej(q.error);
+  });
+}
+function saveBlob(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+async function downloadProduct(pid){
+  const p = products.find(pp => pp.id === pid);
+  if (!p) return toast('Product not found', 'error');
+  if (API_URL) {
+    try {
+      toast('Preparing download…');
+      const f = await api('getFile', { productId: pid });
+      const bin = atob(f.base64), arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return saveBlob(new Blob([arr], { type: f.mime || 'application/octet-stream' }), f.name);
+    } catch (err) { return toast(err.message, 'error'); }
+  }
+  let blob = null;
+  try { blob = await getFile(pid); } catch(e) {}
+  if (blob) return saveBlob(blob, p.file);
+  // demo products have no real file, so give a placeholder
+  const txt = new Blob([`${p.name}\n\n${p.desc}\n\nDemo file (${p.file}) by ${p.sellerName}.`], { type: 'text/plain' });
+  saveBlob(txt, p.file.replace(/\.[^.]+$/, '') + '.txt');
+}
+
+function downloadOrderProducts(ref){
+  const o = orderFromRef(ref);
+  if (!o) return;
+  const ts = transactions.filter(t => (t.ref || t.id) === ref && (t.status || 'paid') === 'paid');
+  if (!ts.length) return toast('Payment not confirmed yet', 'error');
+  const ids = ts.flatMap(t => t.productIds);
+  ids.forEach((id, k) => setTimeout(() => downloadProduct(id), k * 800));
+}
+
+// ── ORDERS / RECEIPT ──
+function orderFromRef(ref){
+  const ts = transactions.filter(t => (t.ref || t.id) === ref);
+  if (!ts.length) return null;
+  const items = [];
+  ts.forEach(t => t.productIds.forEach(pid => {
+    const p = products.find(pp => pp.id === pid);
+    if (p) items.push({ id: p.id, name: p.name, price: p.price, file: p.file });
+  }));
+  return {
+    ref, at: new Date(ts[0].date), items,
+    total: ts.reduce((s, t) => s + t.price, 0),
+    method: ts[0].method || '—', phone: ts[0].phone || '—', txn: ts[0].txn || '—',
+    status: ts.every(t => (t.status || 'paid') === 'paid') ? 'paid' : 'pending'
+  };
+}
+
+function downloadReceipt(ref){
+  const o = orderFromRef(ref); if (!o) return;
+  const W = 600, pad = 32, H = 420 + o.items.length * 30;
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#1a1d27'; x.fillRect(0, 0, W, 90);
+  x.fillStyle = '#fff'; x.textAlign = 'center';
+  x.font = 'bold 24px sans-serif'; x.fillText('DIGIMARKET', W/2, 42);
+  x.font = '14px sans-serif'; x.fillText(T('Payment receipt'), W/2, 68);
+  x.textAlign = 'left';
+  let y = 125;
+  const kv = (k, v) => {
+    x.font = '14px sans-serif'; x.fillStyle = '#6B6B63'; x.fillText(T(k), pad, y);
+    x.fillStyle = '#1A1A1A'; x.font = 'bold 14px sans-serif'; x.textAlign = 'right'; x.fillText(v, W - pad, y);
+    x.textAlign = 'left'; y += 26;
+  };
+  kv('Order no.', o.ref); kv('Date', o.at.toLocaleString()); kv('Tel', o.phone);
+  kv('Method', o.method); kv('Transaction ID', o.txn);
+  kv('Status', T(o.status === 'paid' ? 'Paid' : 'Awaiting confirmation'));
+  y += 8; x.strokeStyle = '#E3E0D4'; x.beginPath(); x.moveTo(pad, y); x.lineTo(W - pad, y); x.stroke(); y += 28;
+  o.items.forEach(i => {
+    x.font = '16px sans-serif'; x.fillStyle = '#1A1A1A';
+    let n = i.name; while (x.measureText(n).width > 360 && n.length > 4) n = n.slice(0, -2);
+    if (n !== i.name) n += '…';
+    x.fillText(n, pad, y); x.textAlign = 'right'; x.fillText(money(i.price), W - pad, y); x.textAlign = 'left'; y += 30;
+  });
+  y += 4; x.beginPath(); x.moveTo(pad, y); x.lineTo(W - pad, y); x.stroke(); y += 32;
+  x.font = 'bold 20px sans-serif'; x.fillText(T('Total'), pad, y);
+  x.textAlign = 'right'; x.fillText(money(o.total), W - pad, y);
+  c.toBlob(b => saveBlob(b, 'receipt-' + o.ref + '.png'), 'image/png');
+}
+
+// ── MY PURCHASES ──
+function renderPurchases(){
+  const box = document.getElementById('purchasesList');
+  if (!currentUser) { box.innerHTML = '<div class="empty"><div class="icon">🔐</div><p>Please <a href="#" onclick="showAuth();return false" style="color:var(--accent2)">login</a> to see your purchases.</p></div>'; return; }
+  const mine = transactions.filter(t => t.buyerId === currentUser.id).sort((a,b) => b.date - a.date);
+  if (!mine.length) { box.innerHTML = '<div class="empty"><div class="icon">📥</div><p>No purchases yet.</p></div>'; return; }
+  const refs = [...new Set(mine.map(t => t.ref || t.id))];
+  box.innerHTML = refs.map(ref => {
+    const ts = mine.filter(t => (t.ref || t.id) === ref);
+    const o = orderFromRef(ref);
+    const rows = ts.flatMap(t => t.productIds.map(pid => {
+      const p = products.find(pp => pp.id === pid); if (!p) return '';
+      const paid = (t.status || 'paid') === 'paid';
+      return `<div class="receipt-item"><div>${esc(p.name)}<small>${esc(p.file)}</small></div>
+        ${paid ? `<button class="btn btn-green btn-sm" onclick="downloadProduct('${p.id}')">⬇️ Download</button>` : '<small style="color:var(--gold)">⏳ Awaiting confirmation</small>'}</div>`;
+    })).join('');
+    return `<div class="purchase">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+        <strong class="ref">${esc(ref)}</strong>
+        <small style="color:var(--muted)">${o.at.toLocaleString()} · ${money(o.total)} · ${o.status === 'paid' ? '✅ Paid' : '⏳ Pending'}</small>
+      </div>
+      ${rows}
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        ${o.status === 'paid' ? `<button class="btn btn-green btn-sm" onclick="downloadOrderProducts('${esc(ref)}')">⬇️ Download all</button>` : ''}
+        <button class="btn btn-outline btn-sm" onclick="downloadReceipt('${esc(ref)}')">🧾 Receipt</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Admin: confirm a payment after checking the SMS / MoMo statement
+async function confirmPayment(id){
+  if (!isAdmin()) return;
+  if (API_URL) {
+    try { await api('confirm', { orderId: id }); toast('Payment confirmed ✅'); await syncRemote(); }
+    catch (err) { toast(err.message, 'error'); }
+    return;
+  }
+  const t = transactions.find(t => t.id === id);
+  if (!t || t.status === 'paid') return;
+  t.status = 'paid';
+  t.productIds.forEach(pid => { const p = products.find(pp => pp.id === pid); if (p) p.sales++; });
+  SS('transactions', transactions); SS('products', products);
+  toast('Payment confirmed ✅'); renderAll();
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  if (!currentUser || !canSell()) return;
+  document.getElementById('dashShare').innerHTML = userRole() === 'admin'
+    ? 'Admin account: you also keep the 30% platform share of every confirmed sale (see Reports).'
+    : `Your share: <b style="color:var(--green)">70%</b> of every confirmed sale · DigiMarket keeps 30%. Agreement signed by <b>${esc(currentUser.agreedName || '')}</b> on ${currentUser.agreedAt ? new Date(currentUser.agreedAt).toLocaleDateString() : '—'}.`;
+  const mine = products.filter(p => p.sellerId === currentUser.id);
+  const sales = transactions.filter(t => t.sellerId === currentUser.id && (t.status || 'paid') === 'paid').sort((a,b) => b.date - a.date);
+  const gross = sales.reduce((s,t) => s + t.price, 0);
+  const earned = sales.reduce((s,t) => s + t.sellerCut, 0);
+
+  document.getElementById('dashProducts').textContent = mine.length;
+  document.getElementById('dashSold').textContent = sales.length;
+  document.getElementById('dashRevenue').textContent = num(gross);
+  document.getElementById('dashEarnings').textContent = num(earned);
+  const myPay = payouts.filter(p => p.sellerId === currentUser.id).sort((a, b) => b.at - a.at);
+  const paidOut = myPay.reduce((s, p) => s + p.amount, 0);
+  document.getElementById('dashPaidOut').textContent = num(paidOut);
+  document.getElementById('dashBalance').textContent = num(Math.max(0, Math.round(earned) - paidOut));
+  document.getElementById('dashPayouts').innerHTML = myPay.length
+    ? myPay.map(p => `<tr><td>${new Date(p.at).toLocaleDateString()}</td><td style="color:var(--green)">${money(p.amount)}</td><td>${esc(p.note || '—')}</td></tr>`).join('')
+    : '<tr><td colspan="3" style="text-align:center;color:var(--muted)">No payouts yet</td></tr>';
+
+  document.getElementById('dashTxns').innerHTML = sales.length
+    ? sales.slice(0, 20).map(t => `<tr>
+        <td>${new Date(t.date).toLocaleDateString()}</td>
+        <td>${esc(t.productNames)}</td>
+        <td>${esc(t.buyerName)}</td>
+        <td>${esc(t.method || '—')}</td>
+        <td>${money(t.price)}</td>
+        <td style="color:var(--gold)">${money(t.fee)}</td>
+        <td style="color:var(--green)">${money(t.sellerCut)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No confirmed sales yet</td></tr>';
+
+  document.getElementById('dashListings').innerHTML = mine.length
+    ? mine.map(p => `
+      <div class="card"><div class="card-body">
+        <div class="cat">${esc(p.cat)}</div>
+        <h3>${esc(p.name)}</h3>
+        <span class="chip">${{ approved: 'Approved ✅', pending: 'Pending ⏳', rejected: 'Rejected ❌' }[p.status || 'approved']}</span>
+        <div class="price-row"><span class="price">${money(p.price)}</span><small style="color:var(--muted)">🔥 ${p.sales} sold</small></div>
+      </div></div>`).join('')
+    : '<p style="color:var(--muted)">You have no listings yet.</p>';
+
+  const admin = document.getElementById('adminBox');
+  if (isAdmin()) {
+    const pending = transactions.filter(t => t.status === 'pending').sort((a,b) => b.date - a.date);
+    admin.classList.remove('hidden');
+    const waiting = products.filter(p => p.status === 'pending').sort((a, b) => b.created - a.created);
+    const asks = requests.filter(r => r.status === 'pending').sort((a, b) => a.createdAt - b.createdAt);
+    admin.innerHTML = `<h3 style="margin:0 0 12px">💰 Seller share requests <small style="color:var(--muted)">(${asks.length})</small></h3>
+      <div style="overflow-x:auto"><table><thead><tr><th>Seller</th><th>Names / Phone</th><th>Pay to</th><th>Amount</th><th></th></tr></thead><tbody>
+      ${asks.length ? asks.map(r => `<tr>
+        <td>${esc(r.sellerName)}<br><small style="color:var(--muted)">${new Date(r.createdAt).toLocaleDateString()}</small></td>
+        <td>${esc(r.fullName)}<br><small style="color:var(--muted)">${esc(r.phone)}</small></td>
+        <td>${esc(methodText(r))}</td><td>${money(r.amount)}</td>
+        <td style="white-space:nowrap"><button class="btn btn-green btn-sm" onclick="openPayRequest('${r.id}')">💸 Pay & confirm</button> <button class="btn btn-danger btn-sm" onclick="rejectRequest('${r.id}')">❌ Reject</button></td></tr>`).join('')
+        : '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No share requests waiting</td></tr>'}
+      </tbody></table></div>
+      <h3 style="margin:24px 0 12px">🆕 Seller uploads to approve <small style="color:var(--muted)">(${waiting.length})</small></h3>
+      <div style="overflow-x:auto"><table><thead><tr><th>Product</th><th>Seller</th><th>Category</th><th>Price</th><th>File</th><th></th></tr></thead><tbody>
+      ${waiting.length ? waiting.map(p => `<tr>
+        <td>${esc(p.name)}<br><small style="color:var(--muted)">${esc(p.desc)}</small></td><td>${esc(p.sellerName)}</td><td>${esc(p.cat)}</td><td>${money(p.price)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="downloadProduct('${p.id}')">⬇️ Preview</button><br><small style="color:var(--muted)">${esc(p.file)}</small></td>
+        <td style="white-space:nowrap"><button class="btn btn-green btn-sm" onclick="reviewProduct('${p.id}','approved')">✅ Approve</button> <button class="btn btn-danger btn-sm" onclick="reviewProduct('${p.id}','rejected')">❌ Reject</button></td></tr>`).join('')
+        : '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No uploads waiting</td></tr>'}
+      </tbody></table></div>
+      <h3 style="margin:24px 0 12px">⏳ Buyer payments to confirm (unlocks download) <small style="color:var(--muted)">(${pending.length})</small></h3>
+      <div style="overflow-x:auto"><table><thead><tr><th>Ref</th><th>Customer</th><th>Product</th><th>Method</th><th>Txn ID</th><th>Amount</th><th></th></tr></thead><tbody>
+      ${pending.length ? pending.map(t => `<tr>
+        <td>${esc(t.ref)}</td><td>${esc(t.buyerName)}<br><small style="color:var(--muted)">${esc(t.phone)}</small></td>
+        <td>${esc(t.productNames)}</td><td>${esc(t.method)}</td><td>${esc(t.txn)}</td><td>${money(t.price)}</td>
+        <td><button class="btn btn-green btn-sm" onclick="confirmPayment('${t.id}')">Confirm</button></td></tr>`).join('')
+        : '<tr><td colspan="7" style="text-align:center;color:var(--muted)">No pending payments</td></tr>'}
+      </tbody></table></div>
+      <h3 style="margin:24px 0 12px">👥 Registered users (block / unblock) <small style="color:var(--muted)">(${adminUsers().length})</small></h3>
+      <input id="userSearch" class="plain-input" placeholder="Search name or email…" value="${esc(userFilter)}" oninput="renderUsersBody(this.value)">
+      <div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+      <tbody id="usersBody">${usersRows(userFilter)}</tbody></table></div>
+      <details style="margin-top:24px" ${cleanupOpen ? 'open' : ''} ontoggle="cleanupOpen=this.open">
+        <summary>🧹 Clean-up (erase products &amp; test data)</summary>
+        <p class="pay-note">These actions cannot be undone. Buyers who already paid will lose their downloads when products are erased.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 16px">
+          <button class="btn btn-danger btn-sm" onclick="eraseProductsAll()">🗑 Erase ALL products (samples and uploads)</button>
+          <button class="btn btn-danger btn-sm" onclick="eraseOrdersAll()">🗑 Erase all orders, payouts &amp; share requests</button>
+        </div>
+        <h3 style="margin:8px 0 10px">All products <small style="color:var(--muted)">(${products.length})</small></h3>
+        <div style="overflow-x:auto"><table><thead><tr><th>Product</th><th>Seller</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody>
+        ${products.length ? products.map(p => `<tr><td>${esc(p.name)}</td><td>${esc(p.sellerName)}</td><td>${money(p.price)}</td><td>${statusChip2(p.status)}</td>
+          <td><button class="btn btn-danger btn-sm" onclick="deleteProductAdmin('${p.id}')">🗑 Delete</button></td></tr>`).join('')
+          : '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No products</td></tr>'}
+        </tbody></table></div>
+      </details><div style="height:24px"></div>`;
+  } else { admin.classList.add('hidden'); admin.innerHTML = ''; }
+}
+
+// ── ADMIN REPORTS ──
+let reportTables = {};
+function csvCell(v){ return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; }
+function exportReport(key){
+  const t = reportTables[key]; if (!t) return;
+  const csv = [t.head].concat(t.rows).map(r => r.map(csvCell).join(',')).join('\r\n');
+  saveBlob(new Blob(['\ufeff' + csv], { type: 'text/csv' }), 'digimarket-' + key + '-' + new Date().toISOString().slice(0, 10) + '.csv');
+}
+function reportTable(key, title, head, rows, moneyCols, limit, actions){
+  reportTables[key] = { head, rows };
+  const shown = limit ? rows.slice(0, limit) : rows;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 12px;gap:10px;flex-wrap:wrap">
+      <h3>${title} <small style="color:var(--muted)">(${rows.length})</small></h3>
+      <button class="btn btn-outline btn-sm" onclick="exportReport('${key}')">⬇️ Download CSV</button></div>
+    <div style="overflow-x:auto"><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}${actions ? '<th></th>' : ''}</tr></thead><tbody>
+    ${shown.length ? shown.map((r, ri) => `<tr>${r.map((c, i) => `<td>${moneyCols.indexOf(i) > -1 ? money(Number(c)) : esc(c)}</td>`).join('')}${actions ? `<td>${actions[ri]}</td>` : ''}</tr>`).join('')
+      : `<tr><td colspan="${head.length + (actions ? 1 : 0)}" style="text-align:center;color:var(--muted)">No data yet</td></tr>`}
+    </tbody></table></div>`;
+}
+
+async function renderReports(){
+  if (userRole() !== 'admin') return;
+  const box = document.getElementById('reportsBox');
+  let d;
+  try {
+    d = API_URL ? await api('report') : {
+      users: users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.email === ADMIN_EMAIL ? 'admin' : (u.role || 'buyer'), agreedAt: u.agreedAt || 0 })),
+      orders: transactions, products, payouts };
+  } catch (e) { box.innerHTML = `<div class="empty"><p>${esc(e.message)}</p></div>`; return; }
+
+  const isPaid = o => (o.status || 'paid') === 'paid';
+  const paid = d.orders.filter(isPaid), pend = d.orders.filter(o => !isPaid(o));
+  const sum = (a, k) => a.reduce((s, o) => s + (Number(o[k]) || 0), 0);
+  const uById = {}; d.users.forEach(u => uById[u.id] = u);
+  const day = ms => ms ? new Date(ms).toLocaleDateString() : '—';
+
+  // buyers
+  const bMap = {};
+  const mkBuyer = (id, name, email) => bMap[id] = bMap[id] || { name, email, refs: new Set(), items: 0, spent: 0, pending: 0, last: 0 };
+  d.users.filter(u => u.role === 'buyer').forEach(u => mkBuyer(u.id, u.name, u.email));
+  d.orders.forEach(o => {
+    const u = uById[o.buyerId] || {};
+    const b = mkBuyer(o.buyerId, u.name || o.buyerName, u.email || '');
+    b.refs.add(o.ref || o.id); b.items += (o.productIds || []).length;
+    if (isPaid(o)) b.spent += o.price; else b.pending += o.price;
+    b.last = Math.max(b.last, o.date || 0);
+  });
+  const buyers = Object.values(bMap).sort((a, b) => b.spent - a.spent)
+    .map(b => [b.name, b.email, b.refs.size, b.items, b.spent, b.pending, day(b.last)]);
+
+  // sellers
+  const sMap = {};
+  const mkSeller = (id, name) => sMap[id] = sMap[id] || { name: (uById[id] || {}).name || name, email: (uById[id] || {}).email || '', agreed: (uById[id] || {}).agreedAt || 0, role: (uById[id] || {}).role, id, products: 0, sales: 0, gross: 0, share: 0, fee: 0, pending: 0, paidOut: 0 };
+  d.users.filter(u => u.role === 'seller').forEach(u => mkSeller(u.id, u.name));
+  d.products.forEach(p => { mkSeller(p.sellerId, p.sellerName).products++; });
+  d.orders.forEach(o => {
+    const s = mkSeller(o.sellerId, o.sellerName);
+    if (isPaid(o)) { s.sales += (o.productIds || []).length; s.gross += o.price; s.share += o.sellerCut; s.fee += o.fee; }
+    else s.pending += o.sellerCut;
+  });
+  (d.payouts || []).forEach(p => { if (sMap[p.sellerId]) sMap[p.sellerId].paidOut += p.amount; });
+  const sellerList = Object.values(sMap).sort((a, b) => b.gross - a.gross);
+  payoutSellers = {};
+  sellerList.forEach(s => { s.balance = Math.round(s.share) - s.paidOut; payoutSellers[s.id] = { name: s.name, balance: s.balance }; });
+  const sellers = sellerList.map(s => [s.name, s.email, s.role === 'admin' ? 'Admin' : (s.agreed ? 'Signed ' + day(s.agreed) : 'NOT signed'), s.products, s.sales, s.gross, s.share, s.fee, s.pending, s.paidOut, s.balance]);
+  const sellerActions = sellerList.map(s => (s.balance > 0 && s.role !== 'admin') ? `<button class="btn btn-green btn-sm" onclick="openPayout('${esc(s.id)}')">💸 Pay out</button>` : '—');
+  const payoutRows = (d.payouts || []).slice().sort((a, b) => b.at - a.at).map(p => [day(p.at), p.sellerName, p.amount, p.note || '', p.by || '']);
+  const totalPaidOut = (d.payouts || []).reduce((s, p) => s + p.amount, 0);
+
+  const orders = d.orders.slice().sort((a, b) => b.date - a.date)
+    .map(o => [day(o.date), o.ref || '', o.buyerName, o.sellerName, o.productNames, o.method || '', o.txn || '', o.price, o.fee, o.sellerCut, isPaid(o) ? 'Paid' : 'Pending']);
+
+  const card = (cls, val, lbl) => `<div class="stat-card"><div class="val ${cls}">${val}</div><div class="lbl">${lbl}</div></div>`;
+  reportTables = {};
+  box.innerHTML = `
+    <div class="stats">
+      ${card('green', num(sum(paid, 'price')), 'Confirmed sales (RWF)')}
+      ${card('gold', num(sum(paid, 'fee')), 'Platform share 30% (RWF)')}
+      ${card('accent', num(sum(paid, 'sellerCut')), 'Seller share earned 70% (RWF)')}
+      ${card('green', num(totalPaidOut), 'Paid out to sellers (RWF)')}
+      ${card('gold', num(sum(pend, 'price')), 'Awaiting confirmation (RWF)')}
+      ${card('accent', buyers.length, 'Buyers')}
+      ${card('accent', sellers.length, 'Sellers')}
+    </div>
+    ${reportTable('buyers', '🛍 Buyers report', ['Buyer', 'Email', 'Orders', 'Items', 'Spent (paid)', 'Pending', 'Last order'], buyers, [4, 5])}
+    ${reportTable('sellers', '📤 Sellers report', ['Seller', 'Email', 'Agreement', 'Products', 'Sales', 'Gross sales', 'Seller share (70%)', 'Platform (30%)', 'Pending share', 'Paid out', 'Balance due'], sellers, [5, 6, 7, 8, 9, 10], 0, sellerActions)}
+    ${reportTable('payouts', '💸 Payouts made', ['Date', 'Seller', 'Amount', 'Note', 'Recorded by'], payoutRows, [2])}
+    ${reportTable('orders', '🧾 All orders', ['Date', 'Order', 'Buyer', 'Seller', 'Products', 'Method', 'Txn ID', 'Amount', 'Platform (30%)', 'Seller (70%)', 'Status'], orders, [7, 8, 9], 100)}
+  `;
+}
+
+// ── PAYOUTS (admin records that a seller's 70% share was sent) ──
+let payoutSellers = {};
+function openPayout(sellerId){
+  const s = payoutSellers[sellerId]; if (!s) return;
+  document.getElementById('payOverlay').classList.remove('hidden');
+  document.getElementById('payBox').innerHTML = `
+    <h2>💸 Pay out seller</h2>
+    <div class="receipt-item"><span>Seller</span><b>${esc(s.name)}</b></div>
+    <div class="receipt-item"><span>Balance due</span><b style="color:var(--green)">${money(s.balance)}</b></div>
+    <p class="pay-note" style="margin-top:10px">Send the money to the seller first (for example by Mobile Money), then record it here.</p>
+    <input id="poAmount" type="number" min="1" max="${s.balance}" value="${s.balance}" inputmode="numeric" placeholder="Amount (RWF)">
+    <input id="poNote" placeholder="Note / MoMo transaction ID (optional)">
+    <button class="btn btn-green" style="width:100%;padding:12px" onclick="confirmPayout('${esc(sellerId)}')">✅ Mark as paid out</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="closePay()">Cancel</button>`;
+}
+async function confirmPayout(sellerId){
+  if (!isAdmin()) return;
+  const s = payoutSellers[sellerId]; if (!s) return;
+  const amount = Math.round(Number(document.getElementById('poAmount').value));
+  const note = document.getElementById('poNote').value.trim();
+  if (!(amount > 0)) return toast('Enter an amount', 'error');
+  if (amount > s.balance) return toast('That is more than the balance due', 'error');
+  if (API_URL) {
+    try { await api('payout', { sellerId, amount, note }); }
+    catch (err) { return toast(err.message, 'error'); }
+  } else {
+    payouts.push({ id: uid(), sellerId, sellerName: s.name, amount, note, at: Date.now(), by: currentUser.name });
+    SS('payouts', payouts);
+  }
+  closePay();
+  toast('Payout recorded ✅');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+
+// ── ADMIN: approve / reject seller uploads ──
+async function reviewProduct(id, decision){
+  if (!isAdmin()) return;
+  if (API_URL) {
+    try { await api('reviewProduct', { productId: id, decision }); }
+    catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const p = products.find(x => x.id === id); if (!p) return;
+    p.status = decision; SS('products', products);
+  }
+  toast(decision === 'approved' ? 'Product approved ✅' : 'Product rejected');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+
+// ── SELLER SHARE REQUESTS ──
+const MIN_REQUEST = 1000;
+// USSD code the admin dials to send money to a seller's phone (check the exact code with your network)
+const SEND_USSD = {
+  'MTN MoMo':     (phone, amount) => `*182*1*1*${phone}*${amount}#`,
+  'Airtel Money': (phone, amount) => `*182*1*1*${phone}*${amount}#`
+};
+const normPhone = p => String(p || '').replace(/\s/g, '').replace(/^\+?250/, '0');
+
+function shareNumbers(){
+  const me = currentUser ? currentUser.id : '';
+  const earned = transactions.filter(t => t.sellerId === me && (t.status || 'paid') === 'paid').reduce((s, t) => s + t.sellerCut, 0);
+  const paidOut = payouts.filter(p => p.sellerId === me).reduce((s, p) => s + p.amount, 0);
+  const pend = requests.filter(r => r.sellerId === me && r.status === 'pending').reduce((s, r) => s + r.amount, 0);
+  return { earned: Math.round(earned), paidOut, pend, avail: Math.max(0, Math.round(earned) - paidOut - pend) };
+}
+function methodText(r){
+  return r.method === 'bank' ? `Bank · ${r.bankName} · ${r.accountNumber}` : `Mobile Money (${r.network}) · ${r.phone}`;
+}
+function statusChip2(st){ return { approved: 'Approved ✅', pending: 'Pending ⏳', rejected: 'Rejected ❌' }[st || 'approved']; }
+function statusChip(st){ return { pending: 'Pending ⏳', paid: 'Paid ✅', rejected: 'Rejected ❌' }[st] || st; }
+
+function toggleShareMethod(){
+  const bank = document.getElementById('shareMethod').value === 'bank';
+  document.getElementById('shareMomo').classList.toggle('hidden', bank);
+  document.getElementById('shareBank').classList.toggle('hidden', !bank);
+}
+function renderShare(){
+  if (userRole() !== 'seller') return;
+  const n = shareNumbers();
+  document.getElementById('shareEarned').textContent = num(n.earned);
+  document.getElementById('sharePaid').textContent = num(n.paidOut);
+  document.getElementById('sharePending').textContent = num(n.pend);
+  document.getElementById('shareAvail').textContent = num(n.avail);
+  const nm = document.getElementById('shareName');
+  if (!nm.value) nm.value = currentUser.name || '';
+  const mine = requests.filter(r => r.sellerId === currentUser.id).sort((a, b) => b.createdAt - a.createdAt);
+  document.getElementById('shareReqs').innerHTML = mine.length
+    ? mine.map(r => `<tr><td>${new Date(r.createdAt).toLocaleDateString()}</td><td>${money(r.amount)}</td><td>${esc(methodText(r))}</td>
+        <td>${statusChip(r.status)}</td><td>${esc(r.note || '—')}</td></tr>`).join('')
+    : '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No requests yet</td></tr>';
+}
+async function submitShare(){
+  if (userRole() !== 'seller') return;
+  const v = id => document.getElementById(id).value.trim();
+  const d = { fullName: v('shareName'), phone: v('sharePhone').replace(/\s/g, ''), method: v('shareMethod'), network: v('shareNetwork'),
+    bankName: v('shareBankName'), accountNumber: v('shareBankAccount'), accountName: v('shareBankHolder'),
+    amount: Math.round(Number(v('shareAmount'))) };
+  if (!d.fullName || !d.phone || !d.amount) return toast('Please fill all fields', 'error');
+  if (!/^(\+?250|0)7\d{8}$/.test(d.phone)) return toast('Enter a valid phone number', 'error');
+  if (d.method === 'bank' && (!d.bankName || !d.accountNumber || !d.accountName)) return toast('Please fill all fields', 'error');
+  if (d.amount < MIN_REQUEST) return toast('Minimum request is RWF ' + MIN_REQUEST, 'error');
+  const avail = shareNumbers().avail;
+  if (d.amount > avail) return toast('You can request up to RWF ' + avail, 'error');
+  if (API_URL) {
+    try { await api('requestShare', d); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    requests.push(Object.assign({ id: uid(), sellerId: currentUser.id, sellerName: currentUser.name, status: 'pending', note: '', createdAt: Date.now(), resolvedAt: 0 },
+      { fullName: d.fullName, phone: d.phone, method: d.method, network: d.method === 'momo' ? d.network : '',
+        bankName: d.bankName, accountNumber: d.accountNumber, accountName: d.accountName, amount: d.amount }));
+    SS('requests', requests);
+  }
+  document.getElementById('shareAmount').value = '';
+  toast('Request sent ✅');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+
+// admin: pay the seller (phone dial / bank details) and confirm
+function openPayRequest(id){
+  const r = requests.find(x => x.id === id); if (!r) return;
+  let how;
+  if (r.method === 'bank') {
+    how = `<div class="receipt-item"><span>Bank name</span><b>${esc(r.bankName)}</b></div>
+      <div class="receipt-item"><span>Account number</span><b>${esc(r.accountNumber)}</b></div>
+      <div class="receipt-item"><span>Account holder</span><b>${esc(r.accountName)}</b></div>
+      <button class="btn btn-outline btn-sm" style="width:100%;margin:10px 0" onclick="copyText('${esc(r.accountNumber)}')">📋 Copy account number</button>
+      <p class="pay-note">Send the money with your bank app, then confirm below.</p>`;
+  } else {
+    const phone = normPhone(r.phone);
+    const ussd = (SEND_USSD[r.network] || SEND_USSD['MTN MoMo'])(phone, r.amount);
+    how = `<div class="receipt-item"><span>Mobile Money</span><b>${esc(r.network)} · ${esc(phone)}</b></div>
+      <a class="btn btn-accent" style="display:block;text-align:center;text-decoration:none;margin:10px 0" href="tel:${ussd.replace(/#/g, '%23')}">📱 Pay with phone</a>
+      <p class="pay-note">Dial this code on your phone to send the money: <b>${ussd}</b>. Check the seller's name on the confirmation screen, then confirm below.</p>`;
+  }
+  document.getElementById('payOverlay').classList.remove('hidden');
+  document.getElementById('payBox').innerHTML = `
+    <h2>💸 Pay seller share</h2>
+    <div class="receipt-item"><span>Seller</span><b>${esc(r.sellerName)}</b></div>
+    <div class="receipt-item"><span>Full names</span><b>${esc(r.fullName)}</b></div>
+    <div class="receipt-item"><span>Phone number</span><b>${esc(r.phone)}</b></div>
+    <div class="receipt-item"><span>Amount</span><b style="color:var(--green)">${money(r.amount)}</b></div>
+    ${how}
+    <input id="prNote" placeholder="Transaction ID / note (optional)">
+    <button class="btn btn-green" style="width:100%;padding:12px" onclick="confirmPayRequest('${esc(id)}')">✅ Confirm payment sent</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="closePay()">Cancel</button>`;
+}
+function copyText(txt){
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('Copied ✅'), () => {});
+}
+async function confirmPayRequest(id){
+  if (!isAdmin()) return;
+  const r = requests.find(x => x.id === id); if (!r || r.status !== 'pending') return;
+  const note = document.getElementById('prNote').value.trim();
+  if (API_URL) {
+    try { await api('payRequest', { requestId: id, note }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const n = note || ('Share request (' + (r.method === 'bank' ? 'Bank' : r.network) + ')');
+    payouts.push({ id: uid(), sellerId: r.sellerId, sellerName: r.sellerName, amount: r.amount, note: n, at: Date.now(), by: currentUser.name });
+    r.status = 'paid'; r.note = n; r.resolvedAt = Date.now();
+    SS('payouts', payouts); SS('requests', requests);
+  }
+  closePay();
+  toast('Share request paid ✅');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+async function rejectRequest(id){
+  if (!isAdmin()) return;
+  const reason = prompt(T('Reason (optional)'));
+  if (reason === null) return;
+  if (API_URL) {
+    try { await api('rejectRequest', { requestId: id, note: reason }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const r = requests.find(x => x.id === id); if (!r) return;
+    r.status = 'rejected'; r.note = reason.trim(); r.resolvedAt = Date.now(); SS('requests', requests);
+  }
+  toast('Share request rejected');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+
+// ── ACCOUNT: change password / forgot password (code by email) ──
+let resetEmail = '', resetCodes = {};
+function renderSettings(){
+  if (!currentUser) return;
+  document.getElementById('setName').textContent = currentUser.name;
+  document.getElementById('setEmail').textContent = currentUser.email;
+  document.getElementById('setRole').textContent = { admin: 'Admin', seller: 'Seller', buyer: 'Buyer' }[userRole()];
+}
+async function changePassword(){
+  const oldP = document.getElementById('pwOld').value, n1 = document.getElementById('pwNew').value, n2 = document.getElementById('pwNew2').value;
+  if (!oldP || !n1 || !n2) return toast('Please fill all fields', 'error');
+  if (n1.length < 6) return toast('Password must be at least 6 characters', 'error');
+  if (n1 !== n2) return toast('Passwords do not match', 'error');
+  if (API_URL) {
+    try { await api('changePassword', { oldPass: oldP, newPass: n1 }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const u = users.find(x => x.id === currentUser.id);
+    if (!u || u.pass !== oldP) return toast('Current password is wrong', 'error');
+    u.pass = n1; SS('users', users);
+    currentUser.pass = n1; SS('currentUser', currentUser);
+  }
+  ['pwOld', 'pwNew', 'pwNew2'].forEach(id => document.getElementById(id).value = '');
+  toast('Password changed ✅');
+}
+
+function openReset(email){
+  hideAuth();
+  document.getElementById('resetOverlay').classList.remove('hidden');
+  document.getElementById('resetBox').innerHTML = `
+    <h2>🔑 Reset password</h2>
+    <p class="pay-note">Enter your email and we will send you a 6-digit code.</p>
+    <input id="rsEmail" type="email" placeholder="Email address" value="${esc(email || '')}">
+    <button class="btn btn-accent" style="width:100%;padding:12px" onclick="sendResetCode()">Send code</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="closeReset()">Back to login</button>`;
+}
+function closeReset(){
+  document.getElementById('resetOverlay').classList.add('hidden');
+  if (!currentUser) showAuth();
+}
+async function sendResetCode(){
+  const email = document.getElementById('rsEmail').value.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast('Enter a valid email', 'error');
+  let demo = '';
+  if (API_URL) {
+    try { await api('requestReset', { email }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    // demo mode has no email service, so the code is shown on screen
+    if (users.some(u => u.email === email)) {
+      demo = String(100000 + Math.floor(Math.random() * 900000));
+      resetCodes[email] = { code: demo, expires: Date.now() + 15 * 60000 };
+    }
+  }
+  resetEmail = email;
+  document.getElementById('resetBox').innerHTML = `
+    <h2>🔑 Reset password</h2>
+    <p class="pay-note">We sent a 6-digit code to your email. It expires in 15 minutes.</p>
+    ${!API_URL ? `<p class="pay-note" style="color:var(--gold)">Demo mode: your code is <b>${demo || '—'}</b></p>` : ''}
+    <input id="rsCode" inputmode="numeric" maxlength="6" placeholder="6-digit code">
+    <input id="rsNew" type="password" placeholder="New password">
+    <input id="rsNew2" type="password" placeholder="Confirm new password">
+    <button class="btn btn-green" style="width:100%;padding:12px" onclick="doReset()">Reset password</button>
+    <button class="btn btn-ghost btn-sm" style="margin-top:8px;width:100%" onclick="closeReset()">Back to login</button>`;
+}
+async function doReset(){
+  const code = document.getElementById('rsCode').value.trim();
+  const n1 = document.getElementById('rsNew').value, n2 = document.getElementById('rsNew2').value;
+  if (!code || !n1 || !n2) return toast('Please fill all fields', 'error');
+  if (n1.length < 6) return toast('Password must be at least 6 characters', 'error');
+  if (n1 !== n2) return toast('Passwords do not match', 'error');
+  if (API_URL) {
+    try { await api('resetPassword', { email: resetEmail, code, newPass: n1 }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const c = resetCodes[resetEmail];
+    if (!c || c.code !== code || Date.now() > c.expires) return toast('Invalid or expired code', 'error');
+    const u = users.find(x => x.email === resetEmail);
+    if (u) { u.pass = n1; SS('users', users); }
+    delete resetCodes[resetEmail];
+  }
+  document.getElementById('resetOverlay').classList.add('hidden');
+  toast('Password changed ✅');
+  if (API_URL && currentUser && currentUser.email === resetEmail) clearSession();   // the server logged us out everywhere
+  if (!currentUser) { showAuth(); document.getElementById('authEmail').value = resetEmail; }
+}
+
+// ── ADMIN CLEAN-UP ──
+let cleanupOpen = false;
+async function clearFiles(){
+  try { const db = await idb(); db.transaction('files', 'readwrite').objectStore('files').clear(); } catch (e) {}
+}
+function askErase(){
+  const t = prompt(T('This cannot be undone. Type ERASE to confirm.'));
+  if (t === null) return false;
+  if (t.trim() !== 'ERASE') { toast('Nothing was erased', 'error'); return false; }
+  return true;
+}
+async function eraseProductsAll(){
+  if (!isAdmin() || !askErase()) return;
+  if (API_URL) {
+    try { await api('eraseProducts', { confirm: 'ERASE' }); } catch (err) { return toast(err.message, 'error'); }
+  } else { products = []; SS('products', products); await clearFiles(); }
+  cart = []; SS('cart', cart); updateCartBadge();
+  toast('Everything erased ✅');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+async function eraseOrdersAll(){
+  if (!isAdmin() || !askErase()) return;
+  if (API_URL) {
+    try { await api('eraseOrders', { confirm: 'ERASE' }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    transactions = []; payouts = []; requests = [];
+    SS('transactions', []); SS('payouts', []); SS('requests', []);
+    products.forEach(p => p.sales = 0); SS('products', products);
+  }
+  toast('Everything erased ✅');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+async function deleteProductAdmin(id){
+  if (!isAdmin()) return;
+  const p = products.find(x => x.id === id); if (!p) return;
+  if (!confirm(T('Delete this product?') + '\n' + p.name)) return;
+  if (API_URL) {
+    try { await api('deleteProduct', { productId: id }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    products = products.filter(x => x.id !== id); SS('products', products);
+    try { const db = await idb(); db.transaction('files', 'readwrite').objectStore('files').delete(id); } catch (e) {}
+  }
+  cart = cart.filter(x => x !== id); SS('cart', cart); updateCartBadge();
+  toast('Product deleted');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+
+// ── ADMIN: block / unblock registered users ──
+let userFilter = '', usersList = [];
+function adminUsers(){
+  return API_URL ? usersList : users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.email === ADMIN_EMAIL ? 'admin' : (u.role || 'buyer'), blocked: u.blocked ? 1 : 0 }));
+}
+function usersRows(f){
+  const q = (f || '').trim().toLowerCase();
+  const list = adminUsers().filter(u => !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
+  if (!list.length) return '<tr><td colspan="5" style="text-align:center;color:var(--muted)">No users</td></tr>';
+  return list.map(u => `<tr>
+    <td>${esc(u.name)}</td><td>${esc(u.email)}</td>
+    <td>${{ admin: 'Admin', seller: 'Seller', buyer: 'Buyer' }[u.role] || 'Buyer'}</td>
+    <td>${u.blocked ? '🚫 Blocked' : 'Active'}</td>
+    <td>${u.role === 'admin' ? '—' : (u.blocked
+      ? `<button class="btn btn-green btn-sm" onclick="blockUser('${esc(u.id)}',false)">✅ Unblock</button>`
+      : `<button class="btn btn-danger btn-sm" onclick="blockUser('${esc(u.id)}',true)">🚫 Block</button>`)}</td></tr>`).join('');
+}
+function renderUsersBody(v){
+  userFilter = v;
+  const b = document.getElementById('usersBody');
+  if (b) b.innerHTML = usersRows(v);
+}
+async function blockUser(id, state){
+  if (!isAdmin()) return;
+  const u = adminUsers().find(x => x.id === id);
+  if (!u || u.role === 'admin') return;
+  if (!confirm(T(state ? 'Block this user?' : 'Unblock this user?') + '\n' + u.name + ' (' + u.email + ')')) return;
+  if (API_URL) {
+    try { await api('blockUser', { userId: id, blocked: state }); } catch (err) { return toast(err.message, 'error'); }
+  } else {
+    const x = users.find(y => y.id === id);
+    if (x) { x.blocked = state ? 1 : 0; SS('users', users); }
+  }
+  toast(state ? 'User blocked' : 'User unblocked');
+  if (API_URL) await syncRemote(); else renderAll();
+}
+// the server says this account was blocked / the session expired
+function sessionError(e){
+  if (/blocked/i.test(e.message)) { clearSession(); toast(e.message, 'error'); }
+  else if (/login/i.test(e.message)) clearSession();
+}
+
+// ── LANGUAGES: English · Français · Kinyarwanda ──
+const LANGS = { en: 'English', fr: 'Français', rw: 'Kinyarwanda' };
+const DICT = [
+// header / auth
+[`🛒 Marketplace`, `🛒 Boutique`, `🛒 Isoko`],
+[`📤 Sell`, `📤 Vendre`, `📤 Gucuruza`],
+[`🛍 Cart`, `🛍 Panier`, `🛍 Igitebo`],
+[`📥 Purchases`, `📥 Achats`, `📥 Ibyaguzwe`],
+[`📊 Dashboard`, `📊 Tableau de bord`, `📊 Imbonerahamwe`],
+[`📈 Reports`, `📈 Rapports`, `📈 Raporo`],
+[`🔐 Login / Register`, `🔐 Connexion / Inscription`, `🔐 Injira / Iyandikishe`],
+[`🔐 Login`, `🔐 Connexion`, `🔐 Injira`],
+[`📝 Register`, `📝 Inscription`, `📝 Iyandikishe`],
+[`🛍 I want to buy products`, `🛍 Je veux acheter des produits`, `🛍 Ndashaka kugura ibicuruzwa`],
+[`📤 I want to sell products`, `📤 Je veux vendre des produits`, `📤 Ndashaka kugurisha ibicuruzwa`],
+[`Login`, `Se connecter`, `Injira`],
+[`Register`, `S'inscrire`, `Iyandikishe`],
+[`Create Account`, `Créer un compte`, `Fungura konti`],
+[`Create account instead`, `Créer un compte`, `Fungura konti`],
+[`Login instead`, `Se connecter`, `Injira`],
+[`Cancel`, `Annuler`, `Reka`],
+[`Logout`, `Déconnexion`, `Sohoka`],
+[`Admin`, `Admin`, `Umuyobozi`],
+[`Seller`, `Vendeur`, `Umucuruzi`],
+[`Buyer`, `Acheteur`, `Umuguzi`],
+[`Your name`, `Votre nom`, `Izina ryawe`],
+[`Email address`, `Adresse e-mail`, `Imeri yawe`],
+[`Password`, `Mot de passe`, `Ijambo ry'ibanga`],
+// marketplace
+[`🛒 Digital Marketplace`, `🛒 Boutique numérique`, `🛒 Isoko ry'ibicuruzwa bya digitale`],
+[`🔍 Search products...`, `🔍 Rechercher des produits...`, `🔍 Shakisha ibicuruzwa...`],
+[`All Categories`, `Toutes les catégories`, `Ibyiciro byose`],
+[`📚 E-books & Guides`, `📚 Livres numériques et guides`, `📚 Ibitabo n'amabwiriza`],
+[`🎨 Templates`, `🎨 Modèles`, `🎨 Inyandiko rugero (formulaire)`],
+[`💻 Software & Scripts`, `💻 Logiciels et scripts`, `💻 Porogaramu na scripts`],
+[`🎵 Music & Audio`, `🎵 Musique et audio`, `🎵 Umuziki n'amajwi`],
+[`🖌️ Design Assets`, `🖌️ Ressources de design`, `🖌️ Ibikoresho by'igishushanyo`],
+[`🎓 Online Courses`, `🎓 Cours en ligne`, `🎓 Amasomo yo kuri murandasi`],
+[`E-books & Guides`, `Livres numériques et guides`, `Ibitabo n'amabwiriza`],
+[`Templates`, `Modèles`, `Inyandiko rugero (formulaire)`],
+[`Software & Scripts`, `Logiciels et scripts`, `Porogaramu na scripts`],
+[`Music & Audio`, `Musique et audio`, `Umuziki n'amajwi`],
+[`Design Assets`, `Ressources de design`, `Ibikoresho by'igishushanyo`],
+[`Online Courses`, `Cours en ligne`, `Amasomo yo kuri murandasi`],
+[`Select...`, `Choisir...`, `Hitamo...`],
+[`Newest`, `Plus récents`, `Ibishya`],
+[`Price: Low → High`, `Prix : croissant`, `Igiciro: Gito → Kinini`],
+[`Price: High → Low`, `Prix : décroissant`, `Igiciro: Kinini → Gito`],
+[`Most Sold`, `Les plus vendus`, `Ibyaguzwe cyane`],
+[`No products found. Be the first to sell!`, `Aucun produit trouvé. Soyez le premier à vendre !`, `Nta bicuruzwa bibonetse. Ba uwa mbere ugurisha!`],
+[`+ Cart`, `+ Panier`, `+ Igitebo`],
+// sell
+[`📤 Sell a Digital Product`, `📤 Vendre un produit numérique`, `📤 Gurisha igicuruzwa cya digitale`],
+[`Please`, `Veuillez`, `Nyamuneka`],
+[`login`, `vous connecter`, `winjire`],
+[`to start selling.`, `pour commencer à vendre.`, `kugira ngo utangire gucuruza.`],
+[`You are logged in as a`, `Vous êtes connecté en tant qu'`, `Winjiye nka`],
+[`buyer`, `acheteur`, `umuguzi`],
+[`. Only seller accounts can upload products.`, `. Seuls les comptes vendeurs peuvent téléverser des produits.`, `. Konti z'abacuruzi gusa ni zo zishobora gushyiraho ibicuruzwa.`],
+[`To sell, register a new account and choose "I want to sell products".`, `Pour vendre, créez un nouveau compte et choisissez « Je veux vendre des produits ».`, `Kugira ngo ugurishe, fungura konti nshya uhitemo "Ndashaka kugurisha ibicuruzwa".`],
+[`📝 Seller Profit-Sharing Agreement`, `📝 Accord de partage des bénéfices (vendeur)`, `📝 Amasezerano yo Gusangira Inyungu (Umucuruzi)`],
+[`You must sign this agreement before you can upload products.`, `Vous devez signer cet accord avant de téléverser des produits.`, `Ugomba gusinya aya masezerano mbere yo gushyiraho ibicuruzwa.`],
+[`Revenue share.`, `Partage des revenus.`, `Gusaranganya amafaranga.`],
+[`For every confirmed sale of your product,`, `Pour chaque vente confirmée de votre produit,`, `Kuri buri cyaguzwe cyemejwe cy'igicuruzwa cyawe,`],
+[`you receive 70%`, `vous recevez 70 %`, `wakira 70%`],
+[`and`, `et`, `naho`],
+[`DigiMarket (admin) keeps 30%`, `DigiMarket (admin) garde 30 %`, `DigiMarket (umuyobozi) agumana 30%`],
+[`of the listed price.`, `du prix affiché.`, `by'igiciro cyashyizweho.`],
+[`How payment works.`, `Fonctionnement du paiement.`, `Uko kwishyura bikorwa.`],
+[`Customers pay DigiMarket. A sale counts only after DigiMarket confirms the payment. Your 70% share is then paid to your mobile money number on the payout schedule DigiMarket announces.`, `Les clients paient DigiMarket. Une vente n'est comptée qu'après confirmation du paiement par DigiMarket. Votre part de 70 % est ensuite versée sur votre numéro Mobile Money selon le calendrier annoncé par DigiMarket.`, `Abakiriya bishyura DigiMarket. Icyaguzwe kibarwa gusa DigiMarket imaze kwemeza ubwishyu. Igice cyawe cya 70% gihita cyoherezwa kuri nomero yawe ya Mobile Money hakurikijwe gahunda yo kwishyura DigiMarket itangaza.`],
+[`Your content.`, `Votre contenu.`, `Ibyo ushyiraho.`],
+[`You confirm that you own, or have the right to sell, everything you upload. Pirated, illegal or harmful content is not allowed.`, `Vous confirmez posséder, ou avoir le droit de vendre, tout ce que vous téléversez. Les contenus piratés, illégaux ou nuisibles sont interdits.`, `Wemeza ko ibyo ushyiraho ari ibyawe cyangwa ufite uburenganzira bwo kubigurisha. Ibyibwe, ibinyuranyije n'amategeko cyangwa byangiza ntibyemewe.`],
+[`Prices.`, `Prix.`, `Ibiciro.`],
+[`You set the price in RWF. The 30% is taken from that price, so customers pay only the listed price.`, `Vous fixez le prix en RWF. Les 30 % sont prélevés sur ce prix ; les clients paient donc uniquement le prix affiché.`, `Washyiraho igiciro mu RWF. 30% akurwa kuri icyo giciro, bityo abakiriya bishyura igiciro cyashyizweho gusa.`],
+[`Removal and refunds.`, `Retrait et remboursements.`, `Gukuraho no gusubiza amafaranga.`],
+[`DigiMarket may remove products that break these terms and may deduct the share of refunded or fraudulent sales from your earnings.`, `DigiMarket peut retirer les produits qui enfreignent ces conditions et déduire de vos gains la part des ventes remboursées ou frauduleuses.`, `DigiMarket ishobora gukuraho ibicuruzwa binyuranyije n'aya mabwiriza, kandi igakata ku nyungu zawe igice cy'ibyaguzwe byasubijwe cyangwa byakozwe mu buriganya.`],
+[`Signing.`, `Signature.`, `Gusinya.`],
+[`Typing your full name and ticking the box below counts as your signature. The date and time are recorded.`, `Saisir votre nom complet et cocher la case ci-dessous vaut signature. La date et l'heure sont enregistrées.`, `Kwandika amazina yawe yose no gukanda ahabugenewe hepfo bibarwa nk'umukono wawe. Itariki n'igihe birabikwa.`],
+[`Type your full name to sign`, `Saisissez votre nom complet pour signer`, `Andika amazina yawe yose kugira ngo usinye`],
+[`I have read and accept the 70% seller / 30% DigiMarket profit-sharing agreement.`, `J'ai lu et j'accepte l'accord de partage des bénéfices : 70 % vendeur / 30 % DigiMarket.`, `Nasomye kandi nemeye amasezerano yo gusangira inyungu: 70% umucuruzi / 30% DigiMarket.`],
+[`✍️ Sign & Continue`, `✍️ Signer et continuer`, `✍️ Shyiraho umukono ukomeze`],
+[`Product Name *`, `Nom du produit *`, `Izina ry'igicuruzwa *`],
+[`Category *`, `Catégorie *`, `Icyiciro *`],
+[`Price (RWF) *`, `Prix (RWF) *`, `Igiciro (RWF) *`],
+[`Description *`, `Description *`, `Ibisobanuro *`],
+[`Upload Digital File *`, `Téléverser le fichier numérique *`, `Shyiraho dosiye ya digitale *`],
+[`💡 Commission Split:`, `💡 Répartition de la commission :`, `💡 Uko inyungu zisaranganywa:`],
+[`Platform takes 30% · You earn`, `La plateforme prend 30 % · Vous gagnez`, `Urubuga rufata 30% · Wowe ubona`],
+[`📤 Publish Product`, `📤 Publier le produit`, `📤 Shyiraho igicuruzwa`],
+[`e.g. Ultimate Social Media Template Pack`, `ex. Pack de modèles pour réseaux sociaux`, `urugero: Inyandiko rugero z'imbuga nkoranyambaga`],
+[`Describe what you're selling...`, `Décrivez ce que vous vendez...`, `Sobanura icyo ugurisha...`],
+[`Product submitted! Waiting for admin approval.`, `Produit envoyé ! En attente de l'approbation de l'admin.`, `Igicuruzwa cyoherejwe! Gitegereje kwemezwa n'umuyobozi.`],
+// cart & payment
+[`🛍 Your Cart`, `🛍 Votre panier`, `🛍 Igitebo cyawe`],
+[`Your cart is empty. Browse the marketplace!`, `Votre panier est vide. Parcourez la boutique !`, `Igitebo cyawe nta kirimo. Reba isoko!`],
+[`Subtotal`, `Sous-total`, `Igiteranyo gito`],
+[`🔸 Platform Fee (30%)`, `🔸 Frais de plateforme (30 %)`, `🔸 Ikiguzi cy'urubuga (30%)`],
+[`💰 Sellers Earn (70%)`, `💰 Gains des vendeurs (70 %)`, `💰 Inyungu z'abacuruzi (70%)`],
+[`🧾 You Pay`, `🧾 Vous payez`, `🧾 Wishyura`],
+[`💳 Proceed to Payment`, `💳 Passer au paiement`, `💳 Komeza wishyure`],
+[`🧾 Confirm your order`, `🧾 Confirmez votre commande`, `🧾 Emeza komande yawe`],
+[`Total`, `Total`, `Igiteranyo`],
+[`Payment method`, `Mode de paiement`, `Uburyo bwo kwishyura`],
+[`Payment number`, `Numéro de paiement`, `Nomero yo kwishyuriraho`],
+[`WhatsApp for payment proof`, `WhatsApp pour la preuve de paiement`, `WhatsApp yo kohererezaho ibimenyetso by'ubwishyu`],
+[`Send your payment proof (screenshot of the payment SMS) to WhatsApp`, `Envoyez votre preuve de paiement (capture d'écran du SMS de paiement) sur WhatsApp`, `Ohereza ibimenyetso by'ubwishyu (ifoto y'ubutumwa bwa SMS bw'ubwishyu) kuri WhatsApp`],
+[`Tap here to pay with MTN`, `Touchez ici pour payer avec MTN`, `Kanda hano wishyure na MTN`],
+[`Tap here to pay with Airtel`, `Touchez ici pour payer avec Airtel`, `Kanda hano wishyure na Airtel`],
+[`Tap the button above; your phone opens the dialer with this code:`, `Touchez le bouton ci-dessus ; votre téléphone ouvre le clavier avec ce code :`, `Kanda ku mwanya uri hejuru; telefoni yawe irafungura aho guhamagara iriho iyi kode:`],
+[`. Press "Call", then confirm with your PIN. If it does not open, copy the code and dial it on your phone.`, `. Appuyez sur « Appeler », puis confirmez avec votre code PIN. Si cela ne s'ouvre pas, copiez le code et composez-le sur votre téléphone.`, `. Kanda "Hamagara", hanyuma wemeze ukoresheje PIN yawe. Niba bidafunguka, wandukure kode uyandike kuri telefoni yawe.`],
+[`After paying, enter your phone number and the transaction ID shown in the SMS.`, `Après le paiement, saisissez votre numéro de téléphone et l'ID de transaction affiché dans le SMS.`, `Nyuma yo kwishyura, andika nomero ya telefoni yawe n'ID y'igikorwa igaragara muri SMS.`],
+[`Your phone e.g. 0788123456`, `Votre téléphone ex. 0788123456`, `Telefoni yawe urugero: 0788123456`],
+[`Transaction ID from SMS e.g. MP240911.1234.A56789`, `ID de transaction du SMS ex. MP240911.1234.A56789`, `ID y'igikorwa iri muri SMS urugero: MP240911.1234.A56789`],
+[`Enter your name.`, `Saisissez votre nom.`, `Andika izina ryawe.`],
+[`Enter a valid phone number.`, `Saisissez un numéro de téléphone valide.`, `Andika nomero ya telefoni yemewe.`],
+[`Enter the transaction ID.`, `Saisissez l'ID de transaction.`, `Andika ID y'igikorwa.`],
+[`This transaction ID was already used.`, `Cet ID de transaction a déjà été utilisé.`, `Iyi ID y'igikorwa yamaze gukoreshwa.`],
+[`📲 Send order on WhatsApp`, `📲 Envoyer la commande sur WhatsApp`, `📲 Ohereza komande kuri WhatsApp`],
+[`Sending order…`, `Envoi de la commande…`, `Komande iragenda…`],
+[`WhatsApp opens with your full order. Tap "Send" so the DigiMarket team receives it and confirms your payment.`, `WhatsApp s'ouvre avec votre commande complète. Touchez « Envoyer » pour que l'équipe DigiMarket la reçoive et confirme votre paiement.`, `WhatsApp irafunguka ifite komande yawe yose. Kanda "Ohereza" kugira ngo itsinda rya DigiMarket ribone komande yawe kandi ryemeze ubwishyu.`],
+[`Go back`, `Retour`, `Subira inyuma`],
+[`Thank you!`, `Merci !`, `Murakoze!`],
+[`Your order`, `Votre commande`, `Komande yawe`],
+[`is saved and your receipt has been downloaded.`, `est enregistrée et votre reçu a été téléchargé.`, `yabitswe kandi inyemezabwishyu yawe yakuweho.`],
+[`Your product files are downloading now.`, `Vos fichiers produits se téléchargent maintenant.`, `Dosiye z'ibicuruzwa byawe ziragenda zikurwa.`],
+[`Your product download unlocks in`, `Le téléchargement de vos produits sera disponible dans`, `Gukuramo ibicuruzwa byawe bizakingurwa muri`],
+[`My Purchases`, `Mes achats`, `Ibyo naguze`],
+[`as soon as our team confirms your payment.`, `dès que notre équipe confirme votre paiement.`, `ako kanya itsinda ryacu rimaze kwemeza ubwishyu bwawe.`],
+[`⬇️ Download product(s) again`, `⬇️ Télécharger à nouveau`, `⬇️ Ongera ukuremo ibicuruzwa`],
+[`📥 Go to My Purchases`, `📥 Aller à Mes achats`, `📥 Jya mu Byo naguze`],
+[`🧾 Download receipt again`, `🧾 Télécharger à nouveau le reçu`, `🧾 Ongera ukuremo inyemezabwishyu`],
+[`Close`, `Fermer`, `Funga`],
+// purchases
+[`📥 My Purchases`, `📥 Mes achats`, `📥 Ibyo naguze`],
+[`to see your purchases.`, `pour voir vos achats.`, `kugira ngo urebe ibyo waguze.`],
+[`No purchases yet.`, `Aucun achat pour le moment.`, `Nta cyo uraguza.`],
+[`⬇️ Download`, `⬇️ Télécharger`, `⬇️ Kuramo`],
+[`⏳ Awaiting confirmation`, `⏳ En attente de confirmation`, `⏳ Bitegereje kwemezwa`],
+[`⬇️ Download all`, `⬇️ Tout télécharger`, `⬇️ Kuramo byose`],
+[`🧾 Receipt`, `🧾 Reçu`, `🧾 Inyemezabwishyu`],
+// dashboard
+[`📊 Seller Dashboard`, `📊 Tableau de bord vendeur`, `📊 Imbonerahamwe y'umucuruzi`],
+[`to view your dashboard.`, `pour voir votre tableau de bord.`, `kugira ngo urebe imbonerahamwe yawe.`],
+[`Your share:`, `Votre part :`, `Igice cyawe:`],
+[`of every confirmed sale · DigiMarket keeps 30%. Agreement signed by`, `de chaque vente confirmée · DigiMarket garde 30 %. Accord signé par`, `cya buri cyaguzwe cyemejwe · DigiMarket igumana 30%. Amasezerano yasinywe na`],
+[`on`, `le`, `ku wa`],
+[`Admin account: you also keep the 30% platform share of every confirmed sale (see Reports).`, `Compte admin : vous gardez aussi la part de 30 % de la plateforme sur chaque vente confirmée (voir Rapports).`, `Konti y'umuyobozi: wowe kandi ugumana 30% y'urubuga kuri buri cyaguzwe cyemejwe (reba Raporo).`],
+[`Products Listed`, `Produits listés`, `Ibicuruzwa byashyizweho`],
+[`Total Sales`, `Ventes totales`, `Ibyaguzwe byose`],
+[`Gross Revenue (RWF)`, `Revenu brut (RWF)`, `Amafaranga yose yinjiye (RWF)`],
+[`Your Earnings — 70% (RWF)`, `Vos gains — 70 % (RWF)`, `Inyungu zawe — 70% (RWF)`],
+[`Paid out to you (RWF)`, `Versé à vous (RWF)`, `Wishyuwe (RWF)`],
+[`Balance due to you (RWF)`, `Solde qui vous est dû (RWF)`, `Asigaye kukwishyurwa (RWF)`],
+[`📋 Recent Transactions`, `📋 Transactions récentes`, `📋 Ibyakozwe vuba`],
+[`Date`, `Date`, `Itariki`],
+[`Product`, `Produit`, `Igicuruzwa`],
+[`Paid Via`, `Payé via`, `Byishyuwe binyuze kuri`],
+[`Price`, `Prix`, `Igiciro`],
+[`Fee (30%)`, `Frais (30 %)`, `Ikiguzi (30%)`],
+[`You Earned`, `Vous avez gagné`, `Wungutse`],
+[`No sales yet`, `Aucune vente pour le moment`, `Nta cyaguzwe kugeza ubu`],
+[`No confirmed sales yet`, `Aucune vente confirmée`, `Nta cyaguzwe cyemejwe`],
+[`💸 Payouts Received`, `💸 Versements reçus`, `💸 Amafaranga wishyuwe`],
+[`Amount`, `Montant`, `Amafaranga`],
+[`Note`, `Note`, `Icyitonderwa`],
+[`No payouts yet`, `Aucun versement`, `Nta kwishyurwa kurakorwa`],
+[`📦 My Listings`, `📦 Mes produits`, `📦 Ibicuruzwa byanjye`],
+[`You have no listings yet.`, `Vous n'avez encore aucun produit.`, `Nta bicuruzwa uragira.`],
+[`Approved ✅`, `Approuvé ✅`, `Byemejwe ✅`],
+[`Pending ⏳`, `En attente ⏳`, `Bitegereje ⏳`],
+[`Rejected ❌`, `Refusé ❌`, `Byanzwe ❌`],
+// admin dashboard
+[`🆕 Seller uploads to approve`, `🆕 Produits des vendeurs à approuver`, `🆕 Ibicuruzwa by'abacuruzi byo kwemeza`],
+[`⏳ Buyer payments to confirm (unlocks download)`, `⏳ Paiements des acheteurs à confirmer (débloque le téléchargement)`, `⏳ Ubwishyu bw'abaguzi bwo kwemeza (bukingura gukuramo)`],
+[`Category`, `Catégorie`, `Icyiciro`],
+[`File`, `Fichier`, `Dosiye`],
+[`⬇️ Preview`, `⬇️ Aperçu`, `⬇️ Reba`],
+[`✅ Approve`, `✅ Approuver`, `✅ Emeza`],
+[`❌ Reject`, `❌ Refuser`, `❌ Anga`],
+[`No uploads waiting`, `Aucun produit en attente`, `Nta bicuruzwa bitegereje`],
+[`Ref`, `Réf.`, `Nomero`],
+[`Customer`, `Client`, `Umukiriya`],
+[`Method`, `Méthode`, `Uburyo`],
+[`Txn ID`, `ID transaction`, `ID y'igikorwa`],
+[`Confirm`, `Confirmer`, `Emeza`],
+[`No pending payments`, `Aucun paiement en attente`, `Nta bwishyu butegereje`],
+// reports
+[`📈 Admin Reports`, `📈 Rapports admin`, `📈 Raporo z'umuyobozi`],
+[`Loading…`, `Chargement…`, `Biraza…`],
+[`Confirmed sales (RWF)`, `Ventes confirmées (RWF)`, `Ibyaguzwe byemejwe (RWF)`],
+[`Platform share 30% (RWF)`, `Part plateforme 30 % (RWF)`, `Igice cy'urubuga 30% (RWF)`],
+[`Seller share earned 70% (RWF)`, `Part vendeurs gagnée 70 % (RWF)`, `Igice cy'abacuruzi 70% (RWF)`],
+[`Paid out to sellers (RWF)`, `Versé aux vendeurs (RWF)`, `Yishyuwe abacuruzi (RWF)`],
+[`Awaiting confirmation (RWF)`, `En attente de confirmation (RWF)`, `Bitegereje kwemezwa (RWF)`],
+[`Buyers`, `Acheteurs`, `Abaguzi`],
+[`Sellers`, `Vendeurs`, `Abacuruzi`],
+[`🛍 Buyers report`, `🛍 Rapport des acheteurs`, `🛍 Raporo y'abaguzi`],
+[`📤 Sellers report`, `📤 Rapport des vendeurs`, `📤 Raporo y'abacuruzi`],
+[`🧾 All orders`, `🧾 Toutes les commandes`, `🧾 Komande zose`],
+[`💸 Payouts made`, `💸 Versements effectués`, `💸 Ibyishyuwe`],
+[`⬇️ Download CSV`, `⬇️ Télécharger CSV`, `⬇️ Kuramo CSV`],
+[`Email`, `E-mail`, `Imeri`],
+[`Orders`, `Commandes`, `Komande`],
+[`Items`, `Articles`, `Ibintu`],
+[`Spent (paid)`, `Dépensé (payé)`, `Yakoreshejwe (byishyuwe)`],
+[`Pending`, `En attente`, `Bitegereje`],
+[`Last order`, `Dernière commande`, `Komande iheruka`],
+[`Agreement`, `Accord`, `Amasezerano`],
+[`Products`, `Produits`, `Ibicuruzwa`],
+[`Sales`, `Ventes`, `Ibyaguzwe`],
+[`Gross sales`, `Ventes brutes`, `Amafaranga yose`],
+[`Seller share (70%)`, `Part vendeur (70 %)`, `Igice cy'umucuruzi (70%)`],
+[`Platform (30%)`, `Plateforme (30 %)`, `Urubuga (30%)`],
+[`Pending share`, `Part en attente`, `Igice gitegereje`],
+[`Paid out`, `Versé`, `Yishyuwe`],
+[`Balance due`, `Solde dû`, `Asigaye`],
+[`Order`, `Commande`, `Komande`],
+[`Status`, `Statut`, `Imiterere`],
+[`Recorded by`, `Enregistré par`, `Byanditswe na`],
+[`NOT signed`, `NON signé`, `Ntabwo yasinye`],
+[`Paid`, `Payé`, `Byishyuwe`],
+[`No data yet`, `Aucune donnée`, `Nta makuru`],
+[`Seller (70%)`, `Vendeur (70 %)`, `Umucuruzi (70%)`],
+[`💸 Pay out`, `💸 Verser`, `💸 Ishyura`],
+[`💸 Pay out seller`, `💸 Verser au vendeur`, `💸 Ishyura umucuruzi`],
+[`Send the money to the seller first (for example by Mobile Money), then record it here.`, `Envoyez d'abord l'argent au vendeur (par exemple par Mobile Money), puis enregistrez-le ici.`, `Banza wohereze amafaranga ku mucuruzi (urugero kuri Mobile Money), hanyuma uyandike hano.`],
+[`Amount (RWF)`, `Montant (RWF)`, `Amafaranga (RWF)`],
+[`Note / MoMo transaction ID (optional)`, `Note / ID de transaction MoMo (facultatif)`, `Icyitonderwa / ID y'igikorwa cya MoMo (si ngombwa)`],
+[`✅ Mark as paid out`, `✅ Marquer comme versé`, `✅ Handika ko yishyuwe`],
+// receipt
+[`Payment receipt`, `Reçu de paiement`, `Inyemezabwishyu y'ubwishyu`],
+[`Order no.`, `N° de commande`, `Nomero ya komande`],
+[`Tel`, `Tél`, `Telefoni`],
+[`Transaction ID`, `ID de transaction`, `ID y'igikorwa`],
+[`Awaiting confirmation`, `En attente de confirmation`, `Bitegereje kwemezwa`],
+// toasts & server messages
+[`Please fill all fields`, `Veuillez remplir tous les champs`, `Nyamuneka uzuza ahabugenewe hose`],
+[`Please enter your name`, `Veuillez saisir votre nom`, `Nyamuneka andika izina ryawe`],
+[`Email already registered`, `E-mail déjà enregistré`, `Iyi imeri yamaze kwiyandikisha`],
+[`Invalid email or password`, `E-mail ou mot de passe invalide`, `Imeri cyangwa ijambo ry'ibanga si byo`],
+[`Logged out`, `Déconnecté`, `Wasohotse`],
+[`Please tick the box to accept`, `Veuillez cocher la case pour accepter`, `Nyamuneka kanda ahabugenewe kugira ngo wemere`],
+[`Agreement signed ✅ You can now upload products`, `Accord signé ✅ Vous pouvez maintenant téléverser des produits`, `Amasezerano yasinywe ✅ Ubu ushobora gushyiraho ibicuruzwa`],
+[`Please login or register to add items`, `Connectez-vous ou inscrivez-vous pour ajouter des articles`, `Injira cyangwa wiyandikishe kugira ngo wongere ibintu`],
+[`You can't buy your own product`, `Vous ne pouvez pas acheter votre propre produit`, `Ntushobora kugura igicuruzwa cyawe`],
+[`Already in cart!`, `Déjà dans le panier !`, `Kiri mu gitebo!`],
+[`Added to cart ✅`, `Ajouté au panier ✅`, `Cyongewe mu gitebo ✅`],
+[`Please login first`, `Veuillez d'abord vous connecter`, `Banza winjire`],
+[`Only seller accounts can upload products`, `Seuls les comptes vendeurs peuvent téléverser des produits`, `Konti z'abacuruzi gusa ni zo zishobora gushyiraho ibicuruzwa`],
+[`Please sign the seller agreement first`, `Veuillez d'abord signer l'accord vendeur`, `Banza usinye amasezerano y'umucuruzi`],
+[`All fields required`, `Tous les champs sont obligatoires`, `Ahabugenewe hose ni ngombwa`],
+[`Product published! 🚀`, `Produit publié ! 🚀`, `Igicuruzwa cyashyizweho! 🚀`],
+[`Could not store the file. Try a smaller file.`, `Impossible d'enregistrer le fichier. Essayez un fichier plus petit.`, `Ntibishoboye kubika dosiye. Gerageza dosiye ntoya.`],
+[`Please login to checkout`, `Connectez-vous pour payer`, `Injira kugira ngo wishyure`],
+[`Cart is empty`, `Le panier est vide`, `Igitebo nta kirimo`],
+[`Product not found`, `Produit introuvable`, `Igicuruzwa nticyabonetse`],
+[`Preparing download…`, `Préparation du téléchargement…`, `Turimo gutegura gukuramo…`],
+[`Payment not confirmed yet`, `Paiement pas encore confirmé`, `Ubwishyu ntiburemezwa`],
+[`Payment confirmed ✅`, `Paiement confirmé ✅`, `Ubwishyu bwemejwe ✅`],
+[`Enter an amount`, `Saisissez un montant`, `Andika amafaranga`],
+[`That is more than the balance due`, `Ce montant dépasse le solde dû`, `Ayo ni menshi kuruta asigaye`],
+[`Payout recorded ✅`, `Versement enregistré ✅`, `Ukwishyura kwanditswe ✅`],
+[`Uploading…`, `Téléversement…`, `Turimo gushyiraho…`],
+[`Could not read the file`, `Impossible de lire le fichier`, `Ntibishoboye gusoma dosiye`],
+[`File too large (max 8 MB)`, `Fichier trop volumineux (max 8 Mo)`, `Dosiye ni nini cyane (ntarenze 8 MB)`],
+[`Product approved ✅`, `Produit approuvé ✅`, `Igicuruzwa cyemejwe ✅`],
+[`Product rejected`, `Produit refusé`, `Igicuruzwa cyanzwe`],
+[`Please login again`, `Veuillez vous reconnecter`, `Nyamuneka ongera winjire`],
+[`Not allowed`, `Non autorisé`, `Ntibyemewe`],
+[`Enter a valid email`, `Saisissez un e-mail valide`, `Andika imeri yemewe`],
+[`Password must be at least 6 characters`, `Le mot de passe doit contenir au moins 6 caractères`, `Ijambo ry'ibanga rigomba kuba nibura inyuguti 6`],
+[`A product in your cart is not available`, `Un produit de votre panier n'est pas disponible`, `Igicuruzwa kimwe mu gitebo cyawe ntikiboneka`],
+[`Enter a valid phone number`, `Saisissez un numéro de téléphone valide`, `Andika nomero ya telefoni yemewe`],
+[`Enter the transaction ID`, `Saisissez l'ID de transaction`, `Andika ID y'igikorwa`],
+[`💰 Seller share request`, `💰 Demande de part vendeur`, `💰 Gusaba igice cy'umucuruzi`],
+[`💰 Request your share`, `💰 Demandez votre part`, `💰 Saba igice cyawe`],
+[`Earned (70%) (RWF)`, `Gagné (70 %) (RWF)`, `Wungutse (70%) (RWF)`],
+[`Already paid out (RWF)`, `Déjà versé (RWF)`, `Wamaze kwishyurwa (RWF)`],
+[`Pending requests (RWF)`, `Demandes en attente (RWF)`, `Ibyasabwe bitegereje (RWF)`],
+[`Available to request (RWF)`, `Disponible à demander (RWF)`, `Ushobora gusaba (RWF)`],
+[`Full names *`, `Nom complet *`, `Amazina yombi *`],
+[`Phone number *`, `Numéro de téléphone *`, `Nomero ya telefoni *`],
+[`How do you want to be paid? *`, `Comment voulez-vous être payé ? *`, `Ushaka kwishyurwa ute? *`],
+[`📱 Mobile Money`, `📱 Mobile Money`, `📱 Mobile Money`],
+[`🏦 Bank account`, `🏦 Compte bancaire`, `🏦 Konti ya banki`],
+[`Mobile Money network *`, `Réseau Mobile Money *`, `Umuyoboro wa Mobile Money *`],
+[`Your share will be sent to the phone number above.`, `Votre part sera envoyée au numéro de téléphone ci-dessus.`, `Igice cyawe kizoherezwa kuri nomero ya telefoni iri hejuru.`],
+[`Bank name *`, `Nom de la banque *`, `Izina rya banki *`],
+[`Account number *`, `Numéro de compte *`, `Nomero ya konti *`],
+[`Account holder name *`, `Nom du titulaire du compte *`, `Izina rya nyiri konti *`],
+[`Amount requested (RWF) *`, `Montant demandé (RWF) *`, `Amafaranga usaba (RWF) *`],
+[`Your request goes to the admin. After it is approved, you are paid by the method you choose.`, `Votre demande est envoyée à l'admin. Une fois approuvée, vous êtes payé selon le mode choisi.`, `Ubusabe bwawe bujya ku muyobozi. Nibumara kwemezwa, wishyurwa hakoreshejwe uburyo wahisemo.`],
+[`📨 Send request`, `📨 Envoyer la demande`, `📨 Ohereza ubusabe`],
+[`📋 My requests`, `📋 Mes demandes`, `📋 Ubusabe bwanjye`],
+[`No requests yet`, `Aucune demande`, `Nta busabe burakorwa`],
+[`Paid ✅`, `Payé ✅`, `Byishyuwe ✅`],
+[`Your full names`, `Vos nom et prénom`, `Amazina yawe yombi`],
+[`Phone e.g. 0788123456`, `Téléphone ex. 0788123456`, `Telefoni urugero: 0788123456`],
+[`e.g. Bank of Kigali`, `ex. Banque de Kigali`, `urugero: Banki ya Kigali`],
+[`Account number`, `Numéro de compte`, `Nomero ya konti`],
+[`Name on the account`, `Nom sur le compte`, `Izina riri kuri konti`],
+[`💰 Seller share requests`, `💰 Demandes de part des vendeurs`, `💰 Ubusabe bw'igice cy'abacuruzi`],
+[`Names / Phone`, `Noms / Téléphone`, `Amazina / Telefoni`],
+[`Pay to`, `Payer à`, `Ishyura kuri`],
+[`💸 Pay & confirm`, `💸 Payer et confirmer`, `💸 Ishyura wemeze`],
+[`No share requests waiting`, `Aucune demande en attente`, `Nta busabe butegereje`],
+[`💸 Pay seller share`, `💸 Payer la part du vendeur`, `💸 Ishyura igice cy'umucuruzi`],
+[`Full names`, `Nom complet`, `Amazina yombi`],
+[`Phone number`, `Numéro de téléphone`, `Nomero ya telefoni`],
+[`Bank name`, `Nom de la banque`, `Izina rya banki`],
+[`Account holder`, `Titulaire du compte`, `Nyiri konti`],
+[`📋 Copy account number`, `📋 Copier le numéro de compte`, `📋 Kopiya nomero ya konti`],
+[`Send the money with your bank app, then confirm below.`, `Envoyez l'argent avec votre application bancaire, puis confirmez ci-dessous.`, `Ohereza amafaranga ukoresheje porogaramu ya banki yawe, hanyuma wemeze hepfo.`],
+[`Mobile Money`, `Mobile Money`, `Mobile Money`],
+[`📱 Pay with phone`, `📱 Payer avec le téléphone`, `📱 Ishyura ukoresheje telefoni`],
+[`Dial this code on your phone to send the money:`, `Composez ce code sur votre téléphone pour envoyer l'argent :`, `Kanda iyi kode kuri telefoni yawe kugira ngo wohereze amafaranga:`],
+[`. Check the seller's name on the confirmation screen, then confirm below.`, `. Vérifiez le nom du vendeur sur l'écran de confirmation, puis confirmez ci-dessous.`, `. Genzura izina ry'umucuruzi ku rupapuro rwo kwemeza, hanyuma wemeze hepfo.`],
+[`Transaction ID / note (optional)`, `ID de transaction / note (facultatif)`, `ID y'igikorwa / icyitonderwa (si ngombwa)`],
+[`✅ Confirm payment sent`, `✅ Confirmer l'envoi du paiement`, `✅ Emeza ko amafaranga yoherejwe`],
+[`Reason (optional)`, `Motif (facultatif)`, `Impamvu (si ngombwa)`],
+[`Request sent ✅`, `Demande envoyée ✅`, `Ubusabe bwoherejwe ✅`],
+[`Copied ✅`, `Copié ✅`, `Byakoporowe ✅`],
+[`Share request paid ✅`, `Demande de part payée ✅`, `Ubusabe bw'igice bwishyuwe ✅`],
+[`Share request rejected`, `Demande de part refusée`, `Ubusabe bw'igice bwanzwe`],
+[`Please enter your full names`, `Veuillez saisir votre nom complet`, `Nyamuneka andika amazina yawe yombi`],
+[`Enter a valid account number`, `Saisissez un numéro de compte valide`, `Andika nomero ya konti yemewe`],
+[`Only seller accounts can request a share`, `Seuls les comptes vendeurs peuvent demander une part`, `Konti z'abacuruzi gusa ni zo zishobora gusaba igice`],
+[`This request is already closed`, `Cette demande est déjà clôturée`, `Ubu busabe bwamaze gufungwa`],
+[`Request not found`, `Demande introuvable`, `Ubusabe ntibwabonetse`],
+[`⚙️ Settings`, `⚙️ Paramètres`, `⚙️ Igenamiterere`],
+[`👤 My account`, `👤 Mon compte`, `👤 Konti yanjye`],
+[`Name`, `Nom`, `Izina`],
+[`Role`, `Rôle`, `Inshingano`],
+[`🔑 Change password`, `🔑 Changer le mot de passe`, `🔑 Hindura ijambo ry'ibanga`],
+[`Current password`, `Mot de passe actuel`, `Ijambo ry'ibanga risanzwe`],
+[`New password`, `Nouveau mot de passe`, `Ijambo ry'ibanga rishya`],
+[`Confirm new password`, `Confirmer le nouveau mot de passe`, `Ongera wandike ijambo ry'ibanga rishya`],
+[`🔑 Update password`, `🔑 Mettre à jour le mot de passe`, `🔑 Hindura ijambo ry'ibanga`],
+[`Forgot your current password?`, `Mot de passe actuel oublié ?`, `Wibagiwe ijambo ry'ibanga risanzwe?`],
+[`Send a code to my email`, `Envoyer un code à mon e-mail`, `Ohereza kode kuri imeri yanjye`],
+[`Forgot password?`, `Mot de passe oublié ?`, `Wibagiwe ijambo ry'ibanga?`],
+[`🔑 Reset password`, `🔑 Réinitialiser le mot de passe`, `🔑 Subiza ijambo ry'ibanga`],
+[`Enter your email and we will send you a 6-digit code.`, `Saisissez votre e-mail et nous vous enverrons un code à 6 chiffres.`, `Andika imeri yawe tukohereze kode y'imibare 6.`],
+[`Send code`, `Envoyer le code`, `Ohereza kode`],
+[`Back to login`, `Retour à la connexion`, `Subira ku kwinjira`],
+[`We sent a 6-digit code to your email. It expires in 15 minutes.`, `Nous avons envoyé un code à 6 chiffres à votre e-mail. Il expire dans 15 minutes.`, `Twohereje kode y'imibare 6 kuri imeri yawe. Irangira nyuma y'iminota 15.`],
+[`Demo mode: your code is`, `Mode démo : votre code est`, `Uburyo bw'igerageza: kode yawe ni`],
+[`6-digit code`, `Code à 6 chiffres`, `Kode y'imibare 6`],
+[`Reset password`, `Réinitialiser le mot de passe`, `Subiza ijambo ry'ibanga`],
+[`Password changed ✅`, `Mot de passe modifié ✅`, `Ijambo ry'ibanga ryahinduwe ✅`],
+[`Passwords do not match`, `Les mots de passe ne correspondent pas`, `Amagambo y'ibanga ntahuye`],
+[`Current password is wrong`, `Le mot de passe actuel est incorrect`, `Ijambo ry'ibanga risanzwe si ryo`],
+[`Invalid or expired code`, `Code invalide ou expiré`, `Kode si yo cyangwa yararangiye`],
+[`Please wait a minute before asking for another code`, `Veuillez patienter une minute avant de demander un autre code`, `Nyamuneka tegereza umunota umwe mbere yo gusaba indi kode`],
+[`Could not send the email. Try again later.`, `Impossible d'envoyer l'e-mail. Réessayez plus tard.`, `Ntibishoboye kohereza imeri. Ongera ugerageze nyuma.`],
+[`🧹 Clean-up (erase products & test data)`, `🧹 Nettoyage (effacer produits et données de test)`, `🧹 Gusukura (gusiba ibicuruzwa n'amakuru y'igerageza)`],
+[`These actions cannot be undone. Buyers who already paid will lose their downloads when products are erased.`, `Ces actions sont irréversibles. Les acheteurs ayant déjà payé perdront leurs téléchargements lorsque les produits seront effacés.`, `Ibi ntibisubizwa inyuma. Abaguzi bamaze kwishyura bazabura uburenganzira bwo gukuramo ibicuruzwa nibisibwa.`],
+[`🗑 Erase ALL products (samples and uploads)`, `🗑 Effacer TOUS les produits (exemples et ajouts)`, `🗑 Siba ibicuruzwa BYOSE (ibyo kugerageza n'ibyashyizweho)`],
+[`🗑 Erase all orders, payouts & share requests`, `🗑 Effacer toutes les commandes, versements et demandes`, `🗑 Siba komande zose, ibyishyuwe n'ubusabe bwose`],
+[`All products`, `Tous les produits`, `Ibicuruzwa byose`],
+[`🗑 Delete`, `🗑 Supprimer`, `🗑 Siba`],
+[`No products`, `Aucun produit`, `Nta bicuruzwa`],
+[`This cannot be undone. Type ERASE to confirm.`, `Action irréversible. Tapez ERASE pour confirmer.`, `Ibi ntibisubizwa inyuma. Andika ERASE kugira ngo wemeze.`],
+[`Delete this product?`, `Supprimer ce produit ?`, `Gusiba iki gicuruzwa?`],
+[`Nothing was erased`, `Rien n'a été effacé`, `Nta kintu cyasibwe`],
+[`Everything erased ✅`, `Tout a été effacé ✅`, `Byose byasibwe ✅`],
+[`Product deleted`, `Produit supprimé`, `Igicuruzwa cyasibwe`],
+[`👥 Registered users (block / unblock)`, `👥 Utilisateurs inscrits (bloquer / débloquer)`, `👥 Abakoresha biyandikishije (guhagarika / gufungura)`],
+[`Search name or email…`, `Rechercher un nom ou un e-mail…`, `Shakisha izina cyangwa imeri…`],
+[`Active`, `Actif`, `Arakora`],
+[`🚫 Blocked`, `🚫 Bloqué`, `🚫 Yahagaritswe`],
+[`🚫 Block`, `🚫 Bloquer`, `🚫 Hagarika`],
+[`✅ Unblock`, `✅ Débloquer`, `✅ Fungura`],
+[`No users`, `Aucun utilisateur`, `Nta bakoresha`],
+[`Block this user?`, `Bloquer cet utilisateur ?`, `Guhagarika uyu mukoresha?`],
+[`Unblock this user?`, `Débloquer cet utilisateur ?`, `Gufungura uyu mukoresha?`],
+[`User blocked`, `Utilisateur bloqué`, `Umukoresha yahagaritswe`],
+[`User unblocked`, `Utilisateur débloqué`, `Umukoresha yafunguwe`],
+[`Your account is blocked. Contact the admin.`, `Votre compte est bloqué. Contactez l'admin.`, `Konti yawe yahagaritswe. Vugana n'umuyobozi.`],
+[`You cannot block an admin`, `Vous ne pouvez pas bloquer un admin`, `Ntushobora guhagarika umuyobozi`],
+[`User not found`, `Utilisateur introuvable`, `Umukoresha ntabonetse`],
+];
+const PATTERNS = [
+  [/^Welcome, (.*)! 🎉$/, { fr: 'Bienvenue, $1 ! 🎉', rw: 'Murakaza neza, $1! 🎉' }],
+  [/^Welcome back, (.*)! 👋$/, { fr: 'Bon retour, $1 ! 👋', rw: 'Murakaza neza kongera, $1! 👋' }],
+  [/^👤 (.*) · 🔥 (\d+) sold$/, { fr: '👤 $1 · 🔥 $2 vendus', rw: '👤 $1 · 🔥 $2 byaguzwe' }],
+  [/^🔥 (\d+) sold$/, { fr: '🔥 $1 vendus', rw: '🔥 $1 byaguzwe' }],
+  [/^by (.*)$/, { fr: 'par $1', rw: 'na $1' }],
+  [/^Signed (.*)$/, { fr: 'Signé $1', rw: 'Yasinye $1' }],
+  [/^(.*) · (RWF [\d,]+) · ✅ Paid$/, { fr: '$1 · $2 · ✅ Payé', rw: '$1 · $2 · ✅ Byishyuwe' }],
+  [/^(.*) · (RWF [\d,]+) · ⏳ Pending$/, { fr: '$1 · $2 · ⏳ En attente', rw: '$1 · $2 · ⏳ Bitegereje' }],
+  [/^Bank · (.*)$/, { fr: 'Banque · $1', rw: 'Banki · $1' }],
+  [/^Minimum request is RWF ([\d,]+)$/, { fr: 'La demande minimale est de RWF $1', rw: 'Ubusabe buto ni RWF $1' }],
+  [/^You can request up to RWF ([\d,]+)$/, { fr: "Vous pouvez demander jusqu'à RWF $1", rw: 'Ushobora gusaba kugeza kuri RWF $1' }],
+  [/^Amount is more than the balance due \(RWF ([\d,]+)\)$/, { fr: 'Le montant dépasse le solde dû (RWF $1)', rw: 'Amafaranga arenze asigaye (RWF $1)' }],
+];
+
+let lang = LS('lang') || 'en';
+const I18N = {};
+DICT.forEach(([en, fr, rw]) => { I18N[en] = { fr, rw }; });
+
+function T(en){
+  if (lang === 'en' || !en) return en;
+  const e = I18N[en];
+  if (e && e[lang]) return e[lang];
+  for (const [re, tr] of PATTERNS) if (re.test(en)) return en.replace(re, tr[lang]);
+  return en;
+}
+function trText(n){
+  const cur = n.nodeValue;
+  let base;
+  if (n._tr !== undefined && cur === n._tr) base = n._en;      // our own write
+  else { base = cur; n._en = cur; }
+  const core = base.trim();
+  const out = core ? T(core) : core;
+  const val = out === core ? base : base.replace(core, () => out);
+  n._tr = val;
+  if (val !== cur) n.nodeValue = val;
+}
+function trAttr(el, a){
+  const cur = el.getAttribute(a);
+  if (cur == null) return;
+  const k = '_en_' + a, t = '_tr_' + a;
+  const base = (el[t] !== undefined && cur === el[t]) ? el[k] : cur;
+  el[k] = base;
+  const out = T(base);
+  el[t] = out;
+  if (out !== cur) el.setAttribute(a, out);
+}
+function trWalk(n){
+  if (n.nodeType === 3) return trText(n);
+  if (n.nodeType !== 1 || n.tagName === 'SCRIPT' || n.tagName === 'STYLE') return;
+  trAttr(n, 'placeholder');
+  n.childNodes.forEach(trWalk);
+}
+function setLang(l){
+  lang = LANGS[l] ? l : 'en';
+  SS('lang', lang);
+  document.documentElement.lang = lang;
+  const sel = document.getElementById('langSel'); if (sel) sel.value = lang;
+  trWalk(document.body);
+}
+new MutationObserver(muts => {
+  muts.forEach(m => {
+    if (m.type === 'characterData') trText(m.target);
+    else m.addedNodes.forEach(trWalk);
+  });
+}).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+// ── INIT ──
+updateUI();
+renderAll();
+if (API_URL) initRemote();
+setLang(lang);
+</script>
+</body>
+</html>
